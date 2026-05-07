@@ -60,9 +60,13 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
       alert('Please fill in the lead passenger name and email.');
       return;
     }
+    if (!agreedToTerms) {
+      alert('Please agree to the terms and conditions.');
+      return;
+    }
     setIsSubmitting(true);
     try {
-      await fetch('/api/send-booking', {
+      const res = await fetch('/api/stripe-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -73,15 +77,23 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           time: flight.departure_time,
           aircraft: flight.aircraft_model,
           price: flight.net_price + flight.broker_fee,
-          passengerName, passengerEmail, passengerPhone, passengers,
+          passengerName,
+          passengerEmail,
+          passengerPhone,
+          passengers,
         }),
       });
-      alert('Soft Hold Successful! Mayfair & Main will contact you shortly with the Charter Agreement and wire instructions.');
-      window.location.href = '/';
-    } catch {
-      alert('Something went wrong. Please try again.');
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url; // Redirect to Stripe hosted checkout
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Something went wrong. Please try again or contact us via WhatsApp.');
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   return (
