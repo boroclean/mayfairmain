@@ -55,47 +55,15 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const depositAmount = 2000;
   const balanceAmount = totalPrice - depositAmount;
 
-  const validate = () => {
+  const handleSoftHold = async () => {
     if (!passengerName || !passengerEmail) {
       alert('Please fill in the lead passenger name and email.');
-      return false;
+      return;
     }
     if (!agreedToTerms) {
       alert('Please agree to the terms and conditions.');
-      return false;
+      return;
     }
-    return true;
-  };
-
-  const handleSoftHold = async () => {
-    if (!validate()) return;
-    setIsSubmitting(true);
-    try {
-      await fetch('/api/send-booking', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          flightId: legId,
-          departure: flight.departure_airport,
-          destination: flight.destination_airport,
-          date: flight.departure_date,
-          time: flight.departure_time,
-          aircraft: flight.aircraft_model,
-          price: flight.net_price + flight.broker_fee,
-          passengerName, passengerEmail, passengerPhone, passengers,
-        }),
-      });
-      alert('Soft Hold Requested! Mayfair & Main will contact you shortly with the Charter Agreement and payment instructions.');
-      window.location.href = '/';
-    } catch (err) {
-      console.error(err);
-      alert('Something went wrong. Please try again.');
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleStripePayment = async () => {
-    if (!validate()) return;
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/stripe-checkout', {
@@ -215,33 +183,20 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 </label>
               </div>
 
-              {/* Two action buttons */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "2rem" }}>
-                {/* Primary: Pay Now */}
-                <button
-                  onClick={handleStripePayment}
-                  disabled={isSubmitting || !agreedToTerms}
-                  className="btn"
-                  style={{ width: "100%", padding: "18px", fontSize: "1.05rem", background: "var(--accent-gold)", color: "var(--bg-primary)", opacity: (isSubmitting || !agreedToTerms) ? 0.5 : 1, cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", fontWeight: 700 }}
-                >
-                  {isSubmitting ? "Processing..." : `💳 Book & Pay Now — €${totalPrice.toLocaleString()}`}
-                </button>
+              {/* Single Soft Hold button via Stripe */}
+              <button
+                onClick={handleSoftHold}
+                disabled={isSubmitting || !agreedToTerms}
+                className="btn"
+                style={{ width: "100%", padding: "18px", marginTop: "2rem", fontSize: "1.05rem", background: "var(--accent-gold)", color: "var(--bg-primary)", opacity: (isSubmitting || !agreedToTerms) ? 0.5 : 1, cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", fontWeight: 700 }}
+              >
+                {isSubmitting ? "Redirecting to Secure Payment..." : "Authorize €2,000 Soft Hold"}
+              </button>
 
-                {/* Secondary: Soft Hold */}
-                <button
-                  onClick={handleSoftHold}
-                  disabled={isSubmitting || !agreedToTerms}
-                  style={{ width: "100%", padding: "15px", fontSize: "0.9rem", background: "transparent", border: "1px solid rgba(212,175,55,0.35)", color: "var(--text-secondary)", cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", opacity: (isSubmitting || !agreedToTerms) ? 0.5 : 1, letterSpacing: "0.04em", transition: "border-color 0.2s" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(212,175,55,0.7)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(212,175,55,0.35)"}
-                >
-                  {isSubmitting ? "Sending..." : "✉️ Request Soft Hold (No Payment Now)"}
-                </button>
-              </div>
-
-              <p style={{ textAlign: "center", fontSize: "0.72rem", color: "var(--text-secondary)", marginTop: "1rem", lineHeight: 1.5 }}>
-                Soft Hold: we email you the Charter Agreement &amp; wire details — no card required.<br />
-                Book &amp; Pay: secure card payment via Stripe, instant confirmation.
+              <p style={{ textAlign: "center", fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: "1.25rem", lineHeight: 1.6 }}>
+                Your card is <strong style={{ color: "var(--text-primary)" }}>authorized only</strong> — not charged.<br />
+                If confirmed, we collect the balance via wire transfer.<br />
+                If cancelled, the hold is released with <strong style={{ color: "var(--text-primary)" }}>zero fees</strong>.
               </p>
             </div>
 
@@ -278,12 +233,16 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   <span>Total Flight Cost</span>
                   <span>€{totalPrice.toLocaleString()}</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.85rem" }}>
-                  <span>Soft Hold Option</span>
-                  <span style={{ color: "var(--accent-gold)" }}>No card required</span>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                  <span>Card Hold (Auth Only)</span>
+                  <span style={{ color: "var(--accent-gold)" }}>€2,000</span>
                 </div>
-                <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem", marginTop: "0.5rem", fontSize: "1.1rem" }}>
-                  <span>Pay Now (Full)</span>
+                <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "1rem" }}>
+                  <span>Balance (Wire on Confirmation)</span>
+                  <span>€{(totalPrice - 2000).toLocaleString()}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "1.05rem" }}>
+                  <span>Total Flight Cost</span>
                   <span style={{ color: "var(--accent-gold)" }}>€{totalPrice.toLocaleString()}</span>
                 </div>
               </div>
