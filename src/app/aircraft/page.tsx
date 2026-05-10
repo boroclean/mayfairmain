@@ -8,7 +8,9 @@ export default function Aircraft() {
       title: "Very Light Jets (VLJ)",
       description: "The entry-level category, ideal for short-haul trips (1-2 hour flights) and smaller airports where large jets cannot land.",
       passengers: "4–5",
-      examples: "Cessna Citation Mustang, Embraer Phenom 100",
+      range: "1,200 nm",
+      speed: "340 kt",
+      examples: "Cessna Citation Mustang",
       features: "Lower operating costs, no separate galley or flight attendant.",
       image: "/images/vlj_jet.png"
     },
@@ -16,7 +18,9 @@ export default function Aircraft() {
       title: "Light Jets",
       description: "The most popular choice for domestic or intra-European routes (e.g., Budapest–London).",
       passengers: "6–8",
-      examples: "Nextant 400XTi, Embraer Phenom 300",
+      range: "1,800 nm",
+      speed: "430 kt",
+      examples: "Embraer Phenom 300",
       features: "Faster and more spacious than VLJs, often equipped with a small lavatory.",
       image: "/images/light_jet.png"
     },
@@ -24,7 +28,9 @@ export default function Aircraft() {
       title: "Midsize Jets",
       description: "Suitable for longer, 4-5 hour journeys where full stand-up cabin height is expected.",
       passengers: "7–9",
-      examples: "Hawker 800XP, Cessna Citation Latitude",
+      range: "2,700 nm",
+      speed: "450 kt",
+      examples: "Cessna Citation Latitude",
       features: "More comfortable seating, larger baggage capacity, and stewardess service available upon request.",
       image: "/images/midsize_jet.png"
     },
@@ -32,7 +38,9 @@ export default function Aircraft() {
       title: "Super Midsize Jets",
       description: "The golden mean between luxury and efficiency. Capable of cross-continental flights or even transoceanic routes under certain conditions.",
       passengers: "8–10",
-      examples: "Bombardier Challenger 350, Gulfstream G280",
+      range: "3,600 nm",
+      speed: "470 kt",
+      examples: "Gulfstream G280",
       features: "High cruising speed, exceptionally quiet cabin, and advanced entertainment systems.",
       image: "/images/jet_interior.png"
     },
@@ -40,7 +48,9 @@ export default function Aircraft() {
       title: "Heavy & Ultra-Long Range Jets",
       description: "The favorites of Mayfair & Main caliber agencies. These represent the absolute pinnacle of luxury, capable of non-stop global travel (e.g., London–Singapore).",
       passengers: "10–19",
-      examples: "Gulfstream G650, Bombardier Global 7500",
+      range: "7,500 nm",
+      speed: "490 kt",
+      examples: "Bombardier Global 7500",
       features: "Separate bedrooms, showers, full-service galleys, and gourmet catering.",
       image: "/images/heavy_jet.png"
     },
@@ -48,7 +58,9 @@ export default function Aircraft() {
       title: "Bizliners (Executive Airliners)",
       description: "Converted commercial airliners (like Boeing or Airbus) completely retrofitted for exclusive private use.",
       passengers: "19–50+",
-      examples: "Airbus ACJ, Boeing BBJ",
+      range: "6,000 nm",
+      speed: "470 kt",
+      examples: "Boeing BBJ",
       features: "Boardrooms, master suites, cinemas, and up to 100+ square meters of living space.",
       image: "/images/bizliner.png"
     }
@@ -59,7 +71,7 @@ export default function Aircraft() {
       <Navbar isTransparent={true} />
 
       {/* Header */}
-      <section style={{ 
+      <section className="aircraft-header" style={{ 
         padding: "16rem 2rem 8rem",
         textAlign: "center",
         background: "var(--bg-primary)",
@@ -80,9 +92,9 @@ export default function Aircraft() {
 
       {/* Categories List */}
       <section className="container" style={{ padding: "4rem 2rem 8rem" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "6rem" }}>
+        <div className="aircraft-list" style={{ display: "flex", flexDirection: "column", gap: "6rem" }}>
           {categories.map((cat, index) => (
-            <div key={index} style={{
+            <div key={index} className="aircraft-card" style={{
               display: "flex",
               flexDirection: index % 2 === 0 ? "row" : "row-reverse",
               gap: "4rem",
@@ -91,7 +103,7 @@ export default function Aircraft() {
               border: "1px solid rgba(212, 175, 55, 0.15)",
             }}>
               
-              <div style={{ flex: 1, position: "relative", minHeight: "400px", width: "100%", height: "100%" }}>
+              <div className="aircraft-image-container" style={{ flex: 1, position: "relative", minHeight: "400px", width: "100%", height: "100%" }}>
                  <Image 
                    src={cat.image} 
                    alt={cat.title} 
@@ -100,18 +112,22 @@ export default function Aircraft() {
                  />
               </div>
 
-              <div style={{ flex: 1, padding: "3rem" }}>
+              <div className="aircraft-content-container" style={{ flex: 1, padding: "3rem" }}>
                 <h3 style={{ fontSize: "2rem", color: "var(--accent-gold)", marginBottom: "1rem", fontFamily: "var(--font-heading)" }}>{cat.title}</h3>
                 <p style={{ color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "2rem" }}>{cat.description}</p>
                 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem", marginBottom: "2rem" }}>
+                <div className="aircraft-stats-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.5rem", marginBottom: "2rem" }}>
                   <div>
                     <span style={{ display: "block", color: "var(--text-secondary)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>Passengers</span>
                     <strong style={{ color: "var(--text-primary)", fontSize: "1.1rem" }}>{cat.passengers}</strong>
                   </div>
                   <div>
-                    <span style={{ display: "block", color: "var(--text-secondary)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>Key Features</span>
-                    <strong style={{ color: "var(--text-primary)", fontSize: "0.9rem", lineHeight: 1.4 }}>{cat.features}</strong>
+                    <span style={{ display: "block", color: "var(--text-secondary)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>Range</span>
+                    <strong style={{ color: "var(--text-primary)", fontSize: "1.1rem" }}>{cat.range}</strong>
+                  </div>
+                  <div>
+                    <span style={{ display: "block", color: "var(--text-secondary)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.3rem" }}>Speed</span>
+                    <strong style={{ color: "var(--text-primary)", fontSize: "1.1rem" }}>{cat.speed}</strong>
                   </div>
                 </div>
 

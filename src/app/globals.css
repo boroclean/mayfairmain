@@ -386,8 +386,73 @@ button, a, [role="button"] {
   section {
     padding: 3rem 1rem !important;
   }
+  
+  .aircraft-header {
+    padding: 8rem 1rem 4rem !important; /* Increase top padding to clear fixed navbar */
+  }
+
+  .whatsapp-btn {
+    right: auto !important;
+    left: 2rem !important;
+  }
+
+  .whatsapp-tooltip {
+    right: auto !important;
+    left: 6.5rem !important;
+  }
+
   .main-nav {
     padding: 1rem 1rem !important;
+  }
+
+  .aircraft-list {
+    gap: 1.5rem !important;
+  }
+
+  .aircraft-card {
+    flex-direction: row !important;
+    gap: 1rem !important;
+    align-items: flex-start !important;
+    padding: 1rem !important;
+    border-radius: 8px;
+  }
+
+  .aircraft-image-container {
+    flex: 0 0 100px !important;
+    min-height: 100px !important;
+    height: 100px !important;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .aircraft-content-container {
+    flex: 1 !important;
+    padding: 0 !important;
+  }
+  
+  .aircraft-content-container h3 {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.3rem !important;
+  }
+  
+  .aircraft-content-container p {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.8rem !important;
+  }
+  
+  .aircraft-stats-grid {
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+  
+  .aircraft-stats-grid span {
+    font-size: 0.6rem !important;
+  }
+  
+  .aircraft-stats-grid strong {
+    font-size: 0.8rem !important;
   }
 
   /* Grid Collapse Utility */
