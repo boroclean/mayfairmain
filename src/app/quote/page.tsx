@@ -147,7 +147,7 @@ export default function Quote() {
       <Navbar isTransparent={true} />
 
       {/* Main Form Area */}
-      <section style={{ 
+      <section className="hero-header" style={{ 
         flex: 1,
         display: "flex",
         alignItems: "center",

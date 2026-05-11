@@ -295,8 +295,8 @@ button, a, [role="button"] {
 }
 
 .empty-legs-table th {
-  padding: 1.5rem;
-  font-size: 0.8rem;
+  padding: 1rem;
+  font-size: 0.85rem;
   text-transform: uppercase;
   letterSpacing: 0.1em;
   color: var(--accent-gold);
@@ -306,7 +306,8 @@ button, a, [role="button"] {
 }
 
 .empty-legs-table td {
-  padding: 1.5rem;
+  padding: 1rem;
+  font-size: 0.95rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   vertical-align: middle;
@@ -346,7 +347,7 @@ button, a, [role="button"] {
 .price-discount {
   color: var(--accent-gold);
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 /* Desktop: hide hamburger button */
@@ -362,6 +363,10 @@ button, a, [role="button"] {
   line-height: 0;
 }
 
+.mobile-only {
+  display: none !important;
+}
+
 /* Phase 9: Mobile Optimization Overrides */
 @media (max-width: 768px) {
   .desktop-menu {
@@ -372,6 +377,15 @@ button, a, [role="button"] {
   }
   .desktop-only {
     display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  .search-input {
+    border-right: 1px solid rgba(212, 175, 55, 0.5) !important;
+    border-radius: 4px !important;
   }
   
   /* Typography Resizing */
@@ -389,6 +403,11 @@ button, a, [role="button"] {
   
   .aircraft-header {
     padding: 8rem 1rem 4rem !important; /* Increase top padding to clear fixed navbar */
+  }
+
+  .hero-header {
+    padding-top: 8rem !important;
+    padding-bottom: 4rem !important;
   }
 
   .whatsapp-btn {

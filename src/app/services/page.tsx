@@ -35,7 +35,7 @@ export default function Services() {
       <Navbar isTransparent={true} />
 
       {/* Hero Section */}
-      <section style={{ 
+      <section className="hero-header" style={{ 
         padding: "16rem 2rem 8rem",
         textAlign: "center",
         background: "linear-gradient(rgba(10, 17, 13, 0.85), var(--bg-primary)), url('/images/jet_interior.png') center/cover",

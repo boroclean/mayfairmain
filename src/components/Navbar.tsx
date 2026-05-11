@@ -42,7 +42,7 @@ export default function Navbar({ isTransparent = false }: { isTransparent?: bool
 
         {/* Desktop Links */}
         <div className="desktop-menu" style={{ display: "flex", gap: "2rem", fontSize: "0.85rem", letterSpacing: "0.05em", textTransform: "uppercase" as const, alignItems: "center" }}>
-          <Link href="/aircraft" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Aircraft</Link>
+          <Link href="/how-it-works" style={{ color: "var(--text-primary)", textDecoration: "none" }}>How it Works</Link>
           <Link href="/empty-legs" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Empty Legs</Link>
           <Link href="/services" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Services</Link>
           <Link href="/heritage" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Heritage</Link>
@@ -81,7 +81,7 @@ export default function Navbar({ isTransparent = false }: { isTransparent?: bool
           gap: "1.5rem",
           boxShadow: "0 20px 40px rgba(0,0,0,0.9)",
         }}>
-          <Link href="/aircraft" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Aircraft</Link>
+          <Link href="/how-it-works" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>How it Works</Link>
           <Link href="/empty-legs" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Empty Legs</Link>
           <Link href="/services" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Services</Link>
           <Link href="/heritage" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Heritage</Link>
