@@ -35,10 +35,16 @@ async function scrapeGlobeAir() {
       try {
         console.log(`Processing flight: ${link}`);
         await page.goto(link, { waitUntil: 'networkidle' });
-        await page.waitForTimeout(1500);
+        
+        // Wait for the passenger button to appear (handles redirect)
+        try {
+          await page.waitForSelector('a[href*="pax=4"]', { timeout: 10000 });
+        } catch (e) {
+          console.log('Passenger button not found or timed out. Skipping.');
+          continue;
+        }
 
-        // Select 4 passengers
-        const passengerButton = await page.$('a.btn.btn-primary[href*="pax=4"]');
+        const passengerButton = await page.$('a[href*="pax=4"]');
         
         if (passengerButton) {
           console.log('Selecting 4 passengers...');
