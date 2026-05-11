@@ -20,15 +20,12 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-      working-directory: website
 
     - name: Install Playwright browsers
       run: npx playwright install chromium --with-deps
-      working-directory: website
 
     - name: Run scraper
       run: npx tsx src/scripts/scrape_globeair.ts
-      working-directory: website
       env:
         NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
         SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
