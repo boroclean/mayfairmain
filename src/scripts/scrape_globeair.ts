@@ -25,7 +25,7 @@ async function scrapeGlobeAir() {
     await page.goto('https://www.globeair.com/empty-leg-flights', { waitUntil: 'networkidle' });
     await page.waitForTimeout(2000);
 
-    const flightLinks = await page.$$eval('a[href*="/booking/emptyleg/"]', links => 
+    const flightLinks = await page.$$eval('a[href^="https://fly.globeair.com/el/"]', links => 
       links.map(a => (a as HTMLAnchorElement).href)
     );
 
