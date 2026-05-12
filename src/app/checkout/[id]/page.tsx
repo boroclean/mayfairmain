@@ -339,8 +339,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Billing Details Section */}
-              <div style={{ background: "var(--bg-secondary)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
-                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "1rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>Billing Details</h2>
+              <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px" }}>
+                <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Billing Details</h2>
                 
                 <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
@@ -513,8 +513,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Secure Soft Hold Section */}
-              <div style={{ background: "var(--bg-secondary)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
-                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "1rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>Secure Soft Hold Authorization</h2>
+              <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px" }}>
+                <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Secure Soft Hold Authorization</h2>
                 <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem", lineHeight: 1.6 }}>
                   Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly.
                   Please provide your card details to place a secure <strong>€{depositAmount.toLocaleString()} hold</strong>. If the flight is unavailable, the hold is released instantly.
