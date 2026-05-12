@@ -34,7 +34,7 @@ function getFlag(airportString: string) {
     // UK
     "BQH": "🇬🇧", "LTN": "🇬🇧", "LCY": "🇬🇧", "FAB": "🇬🇧", "NHT": "🇬🇧", "STN": "🇬🇧", "SEN": "🇬🇧",
     // France
-    "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷",
+    "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷", "CEQ": "🇫🇷",
     // Germany
     "NUE": "🇩🇪", "OBF": "🇩🇪", "CGN": "🇩🇪", "DUS": "🇩🇪", "DTM": "🇩🇪", "LEJ": "🇩🇪", "BRE": "🇩🇪", "MUC": "🇩🇪", "ERF": "🇩🇪", "FDH": "🇩🇪", "HAM": "🇩🇪", "TXL": "🇩🇪", "BER": "🇩🇪", "FRA": "🇩🇪",
     // Switzerland
@@ -47,7 +47,7 @@ function getFlag(airportString: string) {
     "VIE": "🇦🇹", "LNZ": "🇦🇹", "SZG": "🇦🇹", "INN": "🇦🇹", "GRZ": "🇦🇹",
     // Others
     "BUD": "🇭🇺", "LUX": "🇱🇺", "BTS": "🇸🇰", "CRL": "🇧🇪", "BRU": "🇧🇪", "EHBD": "🇳🇱", "AMS": "🇳🇱", "ORK": "🇮🇪", "DUB": "🇮🇪",
-    "PRG": "🇨🇿", "WAW": "🇵🇱", "ATH": "🇬🇷", "LIS": "🇵🇹", "FAO": "🇵🇹", "DWC": "🇦🇪", "DXB": "🇦🇪"
+    "PRG": "🇨🇿", "WAW": "🇵🇱", "ATH": "🇬🇷", "LIS": "🇵🇹", "FAO": "🇵🇹", "DWC": "🇦🇪", "DXB": "🇦🇪", "EDTY": "🇩🇪", "LEY": "🇳🇱"
   };
 
   if (code && flagMap[code]) {
@@ -56,14 +56,15 @@ function getFlag(airportString: string) {
 
   // Fallback to string matching
   if (airportString.includes("London")) return "🇬🇧";
-  if (airportString.includes("Paris") || airportString.includes("Nice")) return "🇫🇷";
+  if (airportString.includes("Paris") || airportString.includes("Nice") || airportString.includes("Angouleme") || airportString.includes("Toulouse") || airportString.includes("Cannes")) return "🇫🇷";
   if (airportString.includes("Geneva") || airportString.includes("Zurich")) return "🇨🇭";
   if (airportString.includes("New York") || airportString.includes("Los Angeles") || airportString.includes("Miami")) return "🇺🇸";
   if (airportString.includes("Dubai")) return "🇦🇪";
   if (airportString.includes("Budapest")) return "🇭🇺";
-  if (airportString.includes("Ibiza")) return "🇪🇸";
-  if (airportString.includes("Olbia")) return "🇮🇹";
-  if (airportString.includes("Cologne") || airportString.includes("Nuremberg") || airportString.includes("Munich")) return "🇩🇪";
+  if (airportString.includes("Ibiza") || airportString.includes("Palma")) return "🇪🇸";
+  if (airportString.includes("Olbia") || airportString.includes("Bologna") || airportString.includes("Verona")) return "🇮🇹";
+  if (airportString.includes("Cologne") || airportString.includes("Nuremberg") || airportString.includes("Munich") || airportString.includes("Schwabisch") || airportString.includes("Dortmund") || airportString.includes("Dusseldorf") || airportString.includes("Leipzig")) return "🇩🇪";
+  if (airportString.includes("Lelystad")) return "🇳🇱";
   
   return "";
 }
@@ -92,16 +93,9 @@ export default function EmptyLegs() {
           .eq('status', 'available')
           .order('created_at', { ascending: false });
 
-        // Fetch GlobeAir flights
-        const globeAirPromise = fetch('/api/globeair').then(res => res.json()).catch(err => {
-          console.error("Error fetching GlobeAir flights:", err);
-          return [];
-        });
+        const { data: supabaseData, error } = await supabasePromise;
 
-        const [supabaseResult, globeAirFlights] = await Promise.all([supabasePromise, globeAirPromise]);
-        const { data: supabaseData, error } = supabaseResult;
-
-        let combinedFlights = [];
+        let combinedFlights: any[] = [];
 
         if (supabaseData) {
           const now = new Date();
@@ -144,19 +138,7 @@ export default function EmptyLegs() {
           }
         }
 
-        // Add GlobeAir flights to the list (filtering out expired ones)
-        if (Array.isArray(globeAirFlights)) {
-          const now = new Date();
-          const oneHourFromNow = new Date(now.getTime() + 1 * 60 * 60 * 1000);
-          
-          const validGlobeAirFlights = globeAirFlights.filter(flight => {
-            const timeStr = flight.departure_time !== 'TBD' ? flight.departure_time.split(' ')[0] : '00:00';
-            const flightDateTime = new Date(`${flight.departure_date} ${timeStr}`);
-            return flightDateTime >= oneHourFromNow;
-          });
-          
-          combinedFlights = [...combinedFlights, ...validGlobeAirFlights];
-        }
+        // Removed GlobeAir iCal fetch - all GlobeAir flights now come directly from the Supabase scraper
 
         // Sort combined flights by date
         combinedFlights.sort((a, b) => {
@@ -288,8 +270,9 @@ export default function EmptyLegs() {
                 
                 {/* Row 4: Price & Action */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ color: "var(--accent-gold)", fontWeight: 700, fontSize: "1.3rem" }}>
-                    €{flight.net_price + flight.broker_fee}
+                  <div style={{ color: "var(--accent-gold)", fontWeight: 700, fontSize: "1.3rem", display: "flex", flexDirection: "column" }}>
+                    <span>€{flight.net_price + flight.broker_fee}</span>
+                    <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: 400 }}>Whole Aircraft</span>
                   </div>
                   <Link href={`/checkout/${flight.id}`} className="btn" style={{ padding: "8px 20px", fontSize: "0.8rem" }}>
                     Book Now
