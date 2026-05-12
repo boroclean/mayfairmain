@@ -28,7 +28,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
   // Billing fields
   const [billingType, setBillingType] = useState('individual'); // 'individual' or 'company'
-  const [passengerName, setPassengerName] = useState(''); // Used for individual name or contact person
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [taxNumber, setTaxNumber] = useState('');
   const [passengerEmail, setPassengerEmail] = useState('');
@@ -81,8 +82,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const balanceAmount = totalPrice - depositAmount;
 
   const handleSoftHold = async () => {
-    if (billingType === 'individual' && !passengerName) {
-      alert('Please fill in your full name.');
+    if (!firstName || !lastName) {
+      alert('Please fill in your first and last name.');
       return;
     }
     if (billingType === 'company' && (!companyName || !taxNumber)) {
@@ -124,7 +125,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           time: flight.departure_time,
           aircraft: flight.aircraft_model,
           price: totalPrice,
-          passengerName, passengerEmail, passengerPhone,
+          firstName,
+          lastName,
+          passengerEmail,
+          passengerPhone,
           billingType,
           companyName,
           taxNumber,
@@ -188,24 +192,28 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
-                {billingType === 'individual' ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", gridColumn: "span 2" }}>
-                    <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Full Name</label>
-                    <input type="text" value={passengerName} onChange={e => setPassengerName(e.target.value)} placeholder="e.g. John Smith" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                  </div>
-                ) : (
-                  <>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Company Name</label>
-                      <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. Acme Corp" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>VAT / Tax Number</label>
-                      <input type="text" value={taxNumber} onChange={e => setTaxNumber(e.target.value)} placeholder="e.g. EU12345678" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                    </div>
-                  </>
-                )}
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>First Name</label>
+                  <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="e.g. John" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Last Name</label>
+                  <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="e.g. Smith" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                </div>
               </div>
+
+              {billingType === 'company' && (
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Company Name</label>
+                    <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. Acme Corp" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>VAT / Tax Number</label>
+                    <input type="text" value={taxNumber} onChange={e => setTaxNumber(e.target.value)} placeholder="e.g. EU12345678" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                  </div>
+                </div>
+              )}
 
               <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
