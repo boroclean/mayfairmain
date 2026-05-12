@@ -174,6 +174,21 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
   return (
     <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-primary)" }}>
+      <style>{`
+        @keyframes fadeInSlideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .step-transition {
+          animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}</style>
       {/* Minimal Checkout Nav */}
       <nav style={{ padding: "1.5rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", background: "var(--bg-secondary)" }}>
         <Link href="/" style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", letterSpacing: "0.1em", color: "var(--accent-gold)" }}>
@@ -189,7 +204,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         
         {/* Step 1: Pets, Info, Insurance (GlobeAir Only) */}
         {currentStep === 1 && isGlobeAir && (
-          <div style={{ width: "100%", maxWidth: "800px" }}>
+          <div className="step-transition" style={{ width: "100%", maxWidth: "800px" }}>
             <div style={{ textAlign: "center", marginBottom: "3rem" }}>
               <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 1 of 2</span>
               <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Flight Customization</h1>
@@ -294,7 +309,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
         {/* Step 2: Billing, Payment, Summary */}
         {currentStep === 2 && (
-          <div className="mobile-stack-reverse" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
+          <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
             
             {/* Left Column: Forms */}
             <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
@@ -495,7 +510,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
         {/* Step 3: Confirmation & Thank You */}
         {currentStep === 3 && (
-          <div style={{ width: "100%", maxWidth: "600px", textAlign: "center", background: "var(--bg-secondary)", padding: "4rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+          <div className="step-transition" style={{ width: "100%", maxWidth: "600px", textAlign: "center", background: "var(--bg-secondary)", padding: "4rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
             <div style={{ fontSize: "4rem", color: "var(--accent-gold)", marginBottom: "2rem" }}>✓</div>
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginBottom: "1rem" }}>Soft Hold Confirmed</h1>
             <p style={{ color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "2rem" }}>
