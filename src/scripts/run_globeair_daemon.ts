@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 
-// Calculate 4 hours in milliseconds (6 times a day)
-const INTERVAL_MS = 4 * 60 * 60 * 1000;
+// Calculate 1 hour in milliseconds
+const INTERVAL_MS = 1 * 60 * 60 * 1000;
 
 function runScraper() {
   console.log(`\n=================================================`);
@@ -17,7 +17,7 @@ function runScraper() {
   
   console.log(`\n=================================================`);
   console.log(`✅ [${new Date().toLocaleString()}] Scraper run complete!`);
-  console.log(`⏳ Next run is scheduled in 4 hours.`);
+  console.log(`⏳ Next run is scheduled in 1 hour.`);
   console.log(`=================================================\n`);
 }
 

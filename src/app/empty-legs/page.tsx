@@ -184,13 +184,13 @@ export default function EmptyLegs() {
             Empty Leg Flights
           </h1>
           <p className="animate-fade-in-up delay-100" style={{ color: "var(--text-secondary)", fontSize: "1.2rem", marginBottom: "2rem" }}>
-            Access the world's most exclusive repositioning flights. Book an entire private jet at up to 75% off the standard charter price. Operators upload their live availability below.
+            Access the world's most exclusive repositioning flights. Book an entire private jet at up to 90% off the standard charter price. Operators upload their live availability below.
           </p>
 
           {/* Operator Registration CTA */}
           <div className="animate-fade-in-up delay-150" style={{ marginBottom: "2rem", fontSize: "1rem" }}>
             <span style={{ color: "var(--text-secondary)", marginRight: "0.5rem" }}>Are you a charter operator?</span>
-            <Link href="/portal/upload" style={{ color: "var(--accent-gold)", fontWeight: 600, textDecoration: "underline" }}>
+            <Link href="/portal" style={{ color: "var(--accent-gold)", fontWeight: 600, textDecoration: "underline" }}>
               Upload your flights here →
             </Link>
           </div>

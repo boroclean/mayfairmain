@@ -112,7 +112,7 @@ export default function Home() {
               Explore our real-time database of available empty leg flights.
             </p>
             <p style={{ color: "var(--text-secondary)", fontSize: "1rem", marginBottom: "2rem" }}>
-              Save up to 75% on standard charter prices.
+              Save up to 90% on standard charter prices.
             </p>
             <Link href="/empty-legs" className="btn" style={{ padding: "14px 35px" }}>
               View Available Flights
