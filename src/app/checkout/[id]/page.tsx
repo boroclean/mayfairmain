@@ -49,7 +49,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-      setCurrentStep(3);
+      setCurrentStep(4);
     }
   }, []);
 
@@ -326,7 +326,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* Step 2: Billing, Payment, Summary */}
+        {/* Step 2: Billing Details */}
         {currentStep === 2 && (
           <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
             
@@ -335,7 +335,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               
               <div style={{ textAlign: "center", marginBottom: "1rem" }}>
                 <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 2</span>
-                <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Billing & Payment</h1>
+                <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Billing <span style={{ fontFamily: "var(--font-body)" }}>&</span> Payment</h1>
               </div>
 
               {/* Billing Details Section */}
@@ -425,6 +425,92 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                {isGlobeAir && (
+                  <button onClick={() => setCurrentStep(1)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    Back
+                  </button>
+                )}
+                <button onClick={() => {
+                  if (!firstName || !lastName || !passengerEmail || !passengerPhone || !billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
+                    alert('Please fill in all billing details.');
+                    return;
+                  }
+                  setCurrentStep(3);
+                }} style={{ padding: "1rem 3rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto" }}>
+                  Proceed to Payment
+                </button>
+              </div>
+            </div>
+
+            {/* Right Column: Flight Summary */}
+            <div style={{ position: "sticky", top: "2rem", height: "fit-content" }}>
+              <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden" }}>
+                <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
+                  <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
+                  
+                  <div style={{ marginBottom: "1.5rem" }}>
+                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
+                    <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.departure_airport)} {flight.departure_airport}</div>
+                    <div style={{ color: "var(--accent-gold)", margin: "4px 0", fontSize: "0.9rem" }}>↓ to</div>
+                    <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.destination_airport)} {flight.destination_airport}</div>
+                  </div>
+
+                  <div style={{ marginBottom: "1.5rem" }}>
+                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Date & Time</div>
+                    <div style={{ fontWeight: 600 }}>{flight.departure_date}</div>
+                    <div style={{ color: "var(--text-secondary)" }}>{flight.departure_time} Local</div>
+                  </div>
+
+                  <div>
+                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Aircraft</div>
+                    <div style={{ fontWeight: 600 }}>{flight.aircraft_model}</div>
+                    <div style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>{flight.aircraft_category} &middot; {flight.seats} Seats</div>
+                  </div>
+                </div>
+
+                <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                    <span>Base Flight Cost</span>
+                    <span>€{totalPrice.toLocaleString()}</span>
+                  </div>
+                  {hasInsurance && (
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                      <span>Cancellation Insurance</span>
+                      <span>€{insurancePrice.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                    <span>Card Hold (Auth Only)</span>
+                    <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "1rem" }}>
+                    <span>Balance (Wire on Confirmation)</span>
+                    <span>€{balanceAmount.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "1.05rem" }}>
+                    <span>Total Cost</span>
+                    <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* Step 3: Payment */}
+        {currentStep === 3 && (
+          <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
+            
+            {/* Left Column: Payment Form */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
+              
+              <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+                <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 3</span>
+                <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Payment</h1>
+              </div>
+
               {/* Secure Soft Hold Section */}
               <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
                 <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Secure Soft Hold Authorization</h2>
@@ -460,12 +546,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                {isGlobeAir && (
-                  <button onClick={() => setCurrentStep(1)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    Back
-                  </button>
-                )}
-                <button onClick={handleSoftHold} disabled={isSubmitting} style={{ padding: "1rem 3rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: isSubmitting ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: isSubmitting ? 0.7 : 1, marginLeft: "auto" }}>
+                <button onClick={() => setCurrentStep(2)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  Back
+                </button>
+                <button onClick={handleSoftHold} disabled={isSubmitting || !agreedToTerms} style={{ padding: "1rem 3rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: (isSubmitting || !agreedToTerms) ? 0.7 : 1 }}>
                   {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString()} Hold`}
                 </button>
               </div>
@@ -527,8 +611,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* Step 3: Confirmation & Thank You */}
-        {currentStep === 3 && (
+        {/* Step 4: Confirmation & Thank You */}
+        {currentStep === 4 && (
           <div className="step-transition" style={{ width: "100%", maxWidth: "600px", textAlign: "center", background: "var(--bg-secondary)", padding: "4rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
             <div style={{ fontSize: "4rem", color: "var(--accent-gold)", marginBottom: "2rem" }}>✓</div>
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginBottom: "1rem" }}>Soft Hold Confirmed</h1>
