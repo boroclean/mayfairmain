@@ -36,7 +36,7 @@ function getFlag(airportString: string) {
     // France
     "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷", "CEQ": "🇫🇷",
     // Germany
-    "NUE": "🇩🇪", "OBF": "🇩🇪", "CGN": "🇩🇪", "DUS": "🇩🇪", "DTM": "🇩🇪", "LEJ": "🇩🇪", "BRE": "🇩🇪", "MUC": "🇩🇪", "ERF": "🇩🇪", "FDH": "🇩🇪", "HAM": "🇩🇪", "TXL": "🇩🇪", "BER": "🇩🇪", "FRA": "🇩🇪",
+    "NUE": "🇩🇪", "OBF": "🇩🇪", "CGN": "🇩🇪", "DUS": "🇩🇪", "DTM": "🇩🇪", "LEJ": "🇩🇪", "BRE": "🇩🇪", "MUC": "🇩🇪", "ERF": "🇩🇪", "FDH": "🇩🇪", "HAM": "🇩🇪", "TXL": "🇩🇪", "BER": "🇩🇪", "FRA": "🇩🇪", "FMO": "🇩🇪", "STR": "🇩🇪", "HAJ": "🇩🇪",
     // Switzerland
     "GVA": "🇨🇭", "ZRH": "🇨🇭", "BRN": "🇨🇭", "BSL": "🇨🇭", "SIR": "🇨🇭", "LUG": "🇨🇭",
     // Italy
@@ -62,9 +62,9 @@ function getFlag(airportString: string) {
   if (airportString.includes("Dubai")) return "🇦🇪";
   if (airportString.includes("Budapest")) return "🇭🇺";
   if (airportString.includes("Ibiza") || airportString.includes("Palma")) return "🇪🇸";
-  if (airportString.includes("Olbia") || airportString.includes("Bologna") || airportString.includes("Verona")) return "🇮🇹";
-  if (airportString.includes("Cologne") || airportString.includes("Nuremberg") || airportString.includes("Munich") || airportString.includes("Schwabisch") || airportString.includes("Dortmund") || airportString.includes("Dusseldorf") || airportString.includes("Leipzig")) return "🇩🇪";
-  if (airportString.includes("Lelystad")) return "🇳🇱";
+  if (airportString.includes("Olbia") || airportString.includes("Bologna") || airportString.includes("Verona") || airportString.includes("Milan") || airportString.includes("Rome")) return "🇮🇹";
+  if (airportString.includes("Cologne") || airportString.includes("Nuremberg") || airportString.includes("Munich") || airportString.includes("Schwabisch") || airportString.includes("Dortmund") || airportString.includes("Dusseldorf") || airportString.includes("Leipzig") || airportString.includes("Munster") || airportString.includes("Bremen") || airportString.includes("Stuttgart") || airportString.includes("Hamburg") || airportString.includes("Berlin") || airportString.includes("Frankfurt")) return "🇩🇪";
+  if (airportString.includes("Lelystad") || airportString.includes("Amsterdam")) return "🇳🇱";
   
   return "";
 }

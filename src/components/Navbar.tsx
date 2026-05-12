@@ -43,7 +43,10 @@ export default function Navbar({ isTransparent = false }: { isTransparent?: bool
         {/* Desktop Links */}
         <div className="desktop-menu" style={{ display: "flex", gap: "2rem", fontSize: "0.85rem", letterSpacing: "0.05em", textTransform: "uppercase" as const, alignItems: "center" }}>
           <Link href="/how-it-works" style={{ color: "var(--text-primary)", textDecoration: "none" }}>How it Works</Link>
-          <Link href="/empty-legs" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Empty Legs</Link>
+          <Link href="/empty-legs" style={{ color: "var(--text-primary)", textDecoration: "none", display: "flex", alignItems: "center" }}>
+            Empty Legs
+            <span style={{ marginLeft: "8px", background: "rgba(220, 38, 38, 0.9)", color: "white", padding: "2px 6px", borderRadius: "4px", fontSize: "0.65rem", fontWeight: "bold", letterSpacing: "0.05em" }}>HOT</span>
+          </Link>
           <Link href="/services" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Services</Link>
           <Link href="/heritage" style={{ color: "var(--text-primary)", textDecoration: "none" }}>Heritage</Link>
           <Link href="/quote" className="btn" style={{ padding: "8px 24px" }}>Inquire</Link>
@@ -82,7 +85,10 @@ export default function Navbar({ isTransparent = false }: { isTransparent?: bool
           boxShadow: "0 20px 40px rgba(0,0,0,0.9)",
         }}>
           <Link href="/how-it-works" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>How it Works</Link>
-          <Link href="/empty-legs" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Empty Legs</Link>
+          <Link href="/empty-legs" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0", display: "flex", alignItems: "center" }}>
+            Empty Legs
+            <span style={{ marginLeft: "8px", background: "rgba(220, 38, 38, 0.9)", color: "white", padding: "2px 6px", borderRadius: "4px", fontSize: "0.7rem", fontWeight: "bold", letterSpacing: "0.05em" }}>HOT</span>
+          </Link>
           <Link href="/services" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Services</Link>
           <Link href="/heritage" onClick={() => setIsOpen(false)} style={{ fontSize: "1.1rem", letterSpacing: "0.1em", textTransform: "uppercase" as const, color: "var(--text-primary)", textDecoration: "none", padding: "0.5rem 0" }}>Heritage</Link>
           <Link href="/quote" onClick={() => setIsOpen(false)} className="btn" style={{ textAlign: "center", marginTop: "0.5rem" }}>Inquire</Link>
