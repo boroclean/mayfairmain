@@ -32,6 +32,9 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const [passengerPhone, setPassengerPhone] = useState('');
   const [passengers, setPassengers] = useState('');
   const [petType, setPetType] = useState('none'); // 'none', 'dog', 'cat'
+  const [petWeight, setPetWeight] = useState('');
+  const [petPassport, setPetPassport] = useState('');
+  const [agreedToPetPolicy, setAgreedToPetPolicy] = useState(false);
 
   useEffect(() => {
     async function fetchFlight() {
@@ -61,30 +64,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
     flight.destination_airport.toLowerCase().includes("lcy")
   );
 
-  const getPetSurcharge = () => {
-    if (petType === 'none' || !isUKDestination) return 0;
-    
-    const dest = flight.destination_airport.toUpperCase();
-    
-    // Specific airport fees based on policy
-    if (dest.includes("FAB") || dest.includes("EGLF")) return 300; // Farnborough
-    if (dest.includes("BQH") || dest.includes("EGKB")) return 350; // Biggin Hill
-    if (dest.includes("STN") || dest.includes("EGSS")) return 450; // Stansted
-    if (dest.includes("EGSC")) return 0; // Cambridge
-    if (dest.includes("EGMD")) return 350; // Lydd
-    if (dest.includes("EGNM")) return 200; // Leeds
-    if (dest.includes("EGBJ")) return 200; // Glos
-    if (dest.includes("EGTK")) return 350; // Oxford
-    if (dest.includes("EGPH")) return 470; // Edinburgh
-    if (dest.includes("EGCC")) return 450; // Manchester
-    if (dest.includes("EGKK")) return 650; // Gatwick
-    
-    return 350; // Default fallback for UK
-  };
-
-  const petSurcharge = getPetSurcharge();
-  const totalPrice = flight.net_price + flight.broker_fee + petSurcharge;
-  const depositAmount = 2000;
+  const totalPrice = flight.net_price + flight.broker_fee;
+  const depositAmount = Math.min(2000, totalPrice);
   const balanceAmount = totalPrice - depositAmount;
 
   const handleSoftHold = async () => {
@@ -95,6 +76,16 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
     if (!agreedToTerms) {
       alert('Please agree to the terms and conditions.');
       return;
+    }
+    if (petType !== 'none') {
+      if (!petWeight || !petPassport) {
+        alert('Please fill in your pet\'s weight and passport number.');
+        return;
+      }
+      if (!agreedToPetPolicy) {
+        alert('Please agree to the pet policy.');
+        return;
+      }
     }
     setIsSubmitting(true);
     try {
@@ -108,8 +99,11 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           date: flight.departure_date,
           time: flight.departure_time,
           aircraft: flight.aircraft_model,
-          price: flight.net_price + flight.broker_fee,
+          price: totalPrice,
           passengerName, passengerEmail, passengerPhone, passengers,
+          petType,
+          petWeight,
+          petPassport,
         }),
       });
       const data = await res.json();
@@ -199,34 +193,33 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   </div>
                 </div>
 
-                {isUKDestination && petSurcharge > 0 && (
-                  <div style={{ padding: "1.5rem", background: "rgba(212, 175, 55, 0.05)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "4px" }}>
-                    <p style={{ color: "var(--accent-gold)", fontSize: "0.9rem", fontWeight: 600, marginBottom: "0.5rem" }}>🇬🇧 UK Pet Travel Notice</p>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", lineHeight: 1.5 }}>
-                      Flights entering the United Kingdom with pets are subject to strict regulations. A mandatory pet entry fee and custom handling fee apply. A surcharge of <strong>€{petSurcharge}</strong> has been added to your total for this destination.
-                    </p>
-                  </div>
+                {petType !== 'none' && (
+                  <>
+                    <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Pet Weight</label>
+                        <input type="text" value={petWeight} onChange={e => setPetWeight(e.target.value)} placeholder="e.g. 5 kg" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                        <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Passport Number</label>
+                        <input type="text" value={petPassport} onChange={e => setPetPassport(e.target.value)} placeholder="e.g. EU123456" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                      </div>
+                    </div>
+
+                    <div style={{ padding: "1rem", background: "rgba(212, 175, 55, 0.05)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "4px" }}>
+                      <p style={{ color: "var(--accent-gold)", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                        Any pets with a maximum weight of 8 kg are welcome on-board. For further information please contact our Customer Care Team.
+                      </p>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <input type="checkbox" id="petPolicy" checked={agreedToPetPolicy} onChange={e => setAgreedToPetPolicy(e.target.checked)} style={{ accentColor: "var(--accent-gold)" }} />
+                      <label htmlFor="petPolicy" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", cursor: "pointer" }}>
+                        I agree to the <Link href="/pet-policy" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Pet Policy</Link>.
+                      </label>
+                    </div>
+                  </>
                 )}
-
-                <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem" }}>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Pet Policy Rules</p>
-                  <ul style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", lineHeight: 1.6 }}>
-                    <li>Max weight 8 kg.</li>
-                    <li>Dogs should wear a muzzle and must sit on a blanket during the flight (provided by owner).</li>
-                    <li>Must be on a leash and fixed.</li>
-                    <li>Any damage to the airplane must be covered by the passenger.</li>
-                    <li>The Commander has the right to deny the flight in case of unruly or aggressive animals.</li>
-                  </ul>
-                </div>
-
-                <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem" }}>
-                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>UK Entry Requirements</p>
-                  <ol style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", lineHeight: 1.6 }}>
-                    <li>Pet must be microchipped.</li>
-                    <li>Vaccinated against rabies.</li>
-                    <li>Treated for tick and tapeworm by a vet 24-48 hours prior to departure.</li>
-                  </ol>
-                </div>
               </div>
             </div>
 
