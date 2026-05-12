@@ -33,7 +33,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const [taxNumber, setTaxNumber] = useState('');
   const [passengerEmail, setPassengerEmail] = useState('');
   const [passengerPhone, setPassengerPhone] = useState('');
-  const [billingAddress, setBillingAddress] = useState('');
+  const [billingCountry, setBillingCountry] = useState('');
+  const [billingCity, setBillingCity] = useState('');
+  const [billingPostalCode, setBillingPostalCode] = useState('');
+  const [billingStreetAddress, setBillingStreetAddress] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [petType, setPetType] = useState('none'); // 'none', 'dog', 'cat'
   const [petWeight, setPetWeight] = useState('');
@@ -86,8 +89,12 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
       alert('Please fill in your company name and tax number.');
       return;
     }
-    if (!passengerEmail || !passengerPhone || !billingAddress) {
-      alert('Please fill in your email, phone, and billing address.');
+    if (!passengerEmail || !passengerPhone) {
+      alert('Please fill in your email and phone number.');
+      return;
+    }
+    if (!billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
+      alert('Please fill in your complete billing address (Country, City, Postal Code, and Street Address).');
       return;
     }
     if (!agreedToTerms) {
@@ -121,7 +128,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           billingType,
           companyName,
           taxNumber,
-          billingAddress,
+          billingCountry,
+          billingCity,
+          billingPostalCode,
+          billingStreetAddress,
           additionalNotes,
           petType,
           petWeight,
@@ -208,9 +218,40 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Billing Address</label>
-                <textarea rows={3} value={billingAddress} onChange={e => setBillingAddress(e.target.value)} placeholder="Street, City, Zip, Country" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none", resize: "none" }} />
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Country</label>
+                  <input type="text" list="countries" value={billingCountry} onChange={e => setBillingCountry(e.target.value)} placeholder="Type or select country" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                  <datalist id="countries">
+                    <option value="United Kingdom" />
+                    <option value="France" />
+                    <option value="Monaco" />
+                    <option value="Switzerland" />
+                    <option value="Italy" />
+                    <option value="Spain" />
+                    <option value="Germany" />
+                    <option value="Austria" />
+                    <option value="Belgium" />
+                    <option value="Netherlands" />
+                    <option value="United States" />
+                    <option value="United Arab Emirates" />
+                  </datalist>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>City</label>
+                  <input type="text" value={billingCity} onChange={e => setBillingCity(e.target.value)} placeholder="e.g. London" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                </div>
+              </div>
+
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Postal Code</label>
+                  <input type="text" value={billingPostalCode} onChange={e => setBillingPostalCode(e.target.value)} placeholder="e.g. SW1A 1AA" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Address (Street & Number)</label>
+                  <input type="text" value={billingStreetAddress} onChange={e => setBillingStreetAddress(e.target.value)} placeholder="e.g. 10 Downing Street" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                </div>
               </div>
             </div>
 
