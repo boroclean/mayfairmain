@@ -26,11 +26,14 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  // Passenger fields
-  const [passengerName, setPassengerName] = useState('');
+  // Billing fields
+  const [billingType, setBillingType] = useState('individual'); // 'individual' or 'company'
+  const [passengerName, setPassengerName] = useState(''); // Used for individual name or contact person
+  const [companyName, setCompanyName] = useState('');
+  const [taxNumber, setTaxNumber] = useState('');
   const [passengerEmail, setPassengerEmail] = useState('');
   const [passengerPhone, setPassengerPhone] = useState('');
-  const [passengers, setPassengers] = useState('');
+  const [billingAddress, setBillingAddress] = useState('');
   const [petType, setPetType] = useState('none'); // 'none', 'dog', 'cat'
   const [petWeight, setPetWeight] = useState('');
   const [petPassport, setPetPassport] = useState('');
@@ -74,8 +77,16 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const balanceAmount = totalPrice - depositAmount;
 
   const handleSoftHold = async () => {
-    if (!passengerName || !passengerEmail) {
-      alert('Please fill in the lead passenger name and email.');
+    if (billingType === 'individual' && !passengerName) {
+      alert('Please fill in your full name.');
+      return;
+    }
+    if (billingType === 'company' && (!companyName || !taxNumber)) {
+      alert('Please fill in your company name and tax number.');
+      return;
+    }
+    if (!passengerEmail || !passengerPhone || !billingAddress) {
+      alert('Please fill in your email, phone, and billing address.');
       return;
     }
     if (!agreedToTerms) {
@@ -105,7 +116,11 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           time: flight.departure_time,
           aircraft: flight.aircraft_model,
           price: totalPrice,
-          passengerName, passengerEmail, passengerPhone, passengers,
+          passengerName, passengerEmail, passengerPhone,
+          billingType,
+          companyName,
+          taxNumber,
+          billingAddress,
           petType,
           petWeight,
           petPassport,
@@ -146,34 +161,56 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             <p style={{ color: "var(--text-secondary)", marginBottom: "3rem", fontSize: "1.1rem" }}>Please provide lead passenger details to secure this flight.</p>
 
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Passenger Details</h2>
+              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Billing Details</h2>
 
-              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Lead Passenger Full Name</label>
-                  <input type="text" value={passengerName} onChange={e => setPassengerName(e.target.value)} placeholder="e.g. John Smith" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Email Address</label>
-                  <input type="email" value={passengerEmail} onChange={e => setPassengerEmail(e.target.value)} placeholder="For charter agreement" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                </div>
+              {/* Individual / Company Toggle */}
+              <div style={{ display: "flex", gap: "1.5rem", marginBottom: "2rem" }}>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                  <input type="radio" name="billingType" value="individual" checked={billingType === 'individual'} onChange={e => setBillingType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
+                  Individual
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                  <input type="radio" name="billingType" value="company" checked={billingType === 'company'} onChange={e => setBillingType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
+                  Company
+                </label>
               </div>
 
               <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                {billingType === 'individual' ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", gridColumn: "span 2" }}>
+                    <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Full Name</label>
+                    <input type="text" value={passengerName} onChange={e => setPassengerName(e.target.value)} placeholder="e.g. John Smith" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                  </div>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Company Name</label>
+                      <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. Acme Corp" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>VAT / Tax Number</label>
+                      <input type="text" value={taxNumber} onChange={e => setTaxNumber(e.target.value)} placeholder="e.g. EU12345678" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Email Address</label>
+                  <input type="email" value={passengerEmail} onChange={e => setPassengerEmail(e.target.value)} placeholder="For invoices & agreement" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Phone Number</label>
                   <input type="tel" value={passengerPhone} onChange={e => setPassengerPhone(e.target.value)} placeholder="+44" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Total Passengers</label>
-                  <input type="number" value={passengers} onChange={e => setPassengers(e.target.value)} placeholder="e.g. 4" min="1" max={flight.seats} style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                </div>
               </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Dietary Requirements & Notes</label>
-                  <textarea rows={3} placeholder="e.g. Vegetarian catering requested" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none", resize: "none" }} />
-                </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Billing Address</label>
+                <textarea rows={3} value={billingAddress} onChange={e => setBillingAddress(e.target.value)} placeholder="Street, City, Zip, Country" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none", resize: "none" }} />
               </div>
+            </div>
 
             {/* Pet Policy Section */}
             {isGlobeAir && (
