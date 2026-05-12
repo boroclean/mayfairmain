@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 function getCountryFlag(airport: string) {
   if (!airport) return "";
@@ -19,6 +23,62 @@ function getCountryFlag(airport: string) {
   return "✈️";
 }
 
+function PaymentForm({ flightId, depositAmount, setCurrentStep }: { flightId: string, depositAmount: number, setCurrentStep: any }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    setIsSubmitting(true);
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/checkout/${flightId}?success=true`,
+      },
+    });
+
+    if (error) {
+      alert(error.message);
+    }
+    setIsSubmitting(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} style={{ width: "100%", display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {/* Secure Soft Hold Section */}
+      <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px" }}>
+        <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Secure Soft Hold Authorization</h2>
+        <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem", lineHeight: 1.6 }}>
+          Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly.
+          Please provide your card details to place a secure <strong>€{depositAmount.toLocaleString()} hold</strong>. If the flight is unavailable, the hold is released instantly.
+        </p>
+
+        {/* Stripe Payment Element */}
+        <PaymentElement options={{ layout: 'tabs' }} />
+
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginTop: "1rem", background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "4px" }}>
+          <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+            By continuing, you agree to the Terms of Service and the cancellation policy.
+          </span>
+        </div>
+      </div>
+
+      {/* Buttons */}
+      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
+        <button type="button" onClick={() => setCurrentStep(2)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+          Back
+        </button>
+        <button type="submit" disabled={isSubmitting || !stripe || !elements} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: (isSubmitting || !stripe || !elements) ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: (isSubmitting || !stripe || !elements) ? 0.7 : 1 }}>
+          {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString()} Hold`}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export default function CheckoutPage({ params }: { params: { id: string } }) {
   const legId = params.id;
   const [flight, setFlight] = useState<any>(null);
@@ -27,6 +87,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [hasInsurance, setHasInsurance] = useState(false);
+  const [clientSecret, setClientSecret] = useState('');
 
   // Billing fields
   const [billingType, setBillingType] = useState('individual'); // 'individual' or 'company'
@@ -485,14 +546,52 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                     Back
                   </button>
                 )}
-                <button onClick={() => {
+                <button onClick={async () => {
                   if (!firstName || !lastName || !passengerEmail || !passengerPhone || !billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
                     alert('Please fill in all billing details.');
                     return;
                   }
-                  setCurrentStep(3);
-                }} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto" }}>
-                  Proceed to Payment
+                  setIsSubmitting(true);
+                  try {
+                    const res = await fetch('/api/stripe-checkout', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        flightId: legId,
+                        departure: flight.departure_airport,
+                        destination: flight.destination_airport,
+                        date: flight.departure_date,
+                        time: flight.departure_time,
+                        aircraft: flight.aircraft_model,
+                        price: finalPrice,
+                        hasInsurance,
+                        firstName,
+                        lastName,
+                        passengerEmail,
+                        passengerPhone,
+                        billingType,
+                        companyName,
+                        taxNumber,
+                        billingCountry,
+                        billingCity,
+                        billingPostalCode,
+                        billingStreetAddress,
+                      }),
+                    });
+                    const data = await res.json();
+                    if (data.clientSecret) {
+                      setClientSecret(data.clientSecret);
+                      setCurrentStep(3);
+                    } else {
+                      alert('Failed to initialize payment.');
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert('An error occurred.');
+                  }
+                  setIsSubmitting(false);
+                }} disabled={isSubmitting} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: isSubmitting ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto", opacity: isSubmitting ? 0.7 : 1 }}>
+                  {isSubmitting ? 'Loading...' : 'Proceed to Payment'}
                 </button>
               </div>
             </div>
@@ -501,116 +600,76 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         )}
 
         {/* Step 3: Payment */}
-        {currentStep === 3 && (
-          <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
-            
-            {/* Left Column: Payment Form */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
+        {currentStep === 3 && clientSecret && (
+          <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
+            <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
               
-              <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-                <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 3</span>
-                <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Payment</h1>
+              {/* Left Column: Payment Form */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
+                
+                <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+                  <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 3</span>
+                  <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Payment</h1>
+                </div>
+
+                <PaymentForm flightId={legId} depositAmount={depositAmount} setCurrentStep={setCurrentStep} />
               </div>
 
-              {/* Secure Soft Hold Section */}
-              <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px" }}>
-                <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Secure Soft Hold Authorization</h2>
-                <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem", lineHeight: 1.6 }}>
-                  Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly.
-                  Please provide your card details to place a secure <strong>€{depositAmount.toLocaleString()} hold</strong>. If the flight is unavailable, the hold is released instantly.
-                </p>
-
-                {/* Mock Credit Card Input */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Card Number</label>
-                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                  </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Expiry Date</label>
-                      <input type="text" placeholder="MM / YY" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+              {/* Right Column: Flight Summary */}
+              <div style={{ position: "sticky", top: "2rem", height: "fit-content" }}>
+                <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden" }}>
+                  <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
+                    <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
+                    
+                    <div style={{ marginBottom: "1.5rem" }}>
+                      <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
+                      <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.departure_airport)} {flight.departure_airport}</div>
+                      <div style={{ color: "var(--accent-gold)", margin: "4px 0", fontSize: "0.9rem" }}>↓ to</div>
+                      <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.destination_airport)} {flight.destination_airport}</div>
                     </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>CVV</label>
-                      <input type="text" placeholder="xxx" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+
+                    <div style={{ marginBottom: "1.5rem" }}>
+                      <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Date & Time</div>
+                      <div style={{ fontWeight: 600 }}>{flight.departure_date}</div>
+                      <div style={{ color: "var(--text-secondary)" }}>{flight.departure_time} Local</div>
+                    </div>
+
+                    <div>
+                      <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Aircraft</div>
+                      <div style={{ fontWeight: 600 }}>{flight.aircraft_model}</div>
+                      <div style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>{flight.aircraft_category} &middot; {flight.seats} Seats</div>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginTop: "1rem", background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "4px" }}>
-                  <input type="checkbox" id="terms" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} style={{ marginTop: "3px", accentColor: "var(--accent-gold)" }} />
-                  <label htmlFor="terms" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", cursor: "pointer" }}>
-                    I understand this is a hold, not a charge. I agree to the <Link href="/terms" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Terms of Service</Link> and the cancellation policy.
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Flight Summary */}
-            <div style={{ position: "sticky", top: "2rem", height: "fit-content" }}>
-              <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden" }}>
-                <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
-                  <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
-                  
-                  <div style={{ marginBottom: "1.5rem" }}>
-                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
-                    <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.departure_airport)} {flight.departure_airport}</div>
-                    <div style={{ color: "var(--accent-gold)", margin: "4px 0", fontSize: "0.9rem" }}>↓ to</div>
-                    <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.destination_airport)} {flight.destination_airport}</div>
-                  </div>
-
-                  <div style={{ marginBottom: "1.5rem" }}>
-                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Date & Time</div>
-                    <div style={{ fontWeight: 600 }}>{flight.departure_date}</div>
-                    <div style={{ color: "var(--text-secondary)" }}>{flight.departure_time} Local</div>
-                  </div>
-
-                  <div>
-                    <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Aircraft</div>
-                    <div style={{ fontWeight: 600 }}>{flight.aircraft_model}</div>
-                    <div style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>{flight.aircraft_category} &middot; {flight.seats} Seats</div>
-                  </div>
-                </div>
-
-                <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                    <span>Base Flight Cost</span>
-                    <span>€{totalPrice.toLocaleString()}</span>
-                  </div>
-                  {hasInsurance && (
+                  <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      <span>Cancellation Insurance</span>
-                      <span>€{insurancePrice.toLocaleString()}</span>
+                      <span>Base Flight Cost</span>
+                      <span>€{totalPrice.toLocaleString()}</span>
                     </div>
-                  )}
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-                    <span>Card Hold (Auth Only)</span>
-                    <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString()}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "1rem" }}>
-                    <span>Balance (Wire on Confirmation)</span>
-                    <span>€{balanceAmount.toLocaleString()}</span>
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "1.05rem" }}>
-                    <span>Total Cost</span>
-                    <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
+                    {hasInsurance && (
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                        <span>Cancellation Insurance</span>
+                        <span>€{insurancePrice.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
+                      <span>Card Hold (Auth Only)</span>
+                      <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "1rem" }}>
+                      <span>Balance (Wire on Confirmation)</span>
+                      <span>€{balanceAmount.toLocaleString()}</span>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "1.05rem" }}>
+                      <span>Total Cost</span>
+                      <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Buttons moved here */}
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
-                <button onClick={() => setCurrentStep(2)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  Back
-                </button>
-                <button onClick={handleSoftHold} disabled={isSubmitting || !agreedToTerms} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: (isSubmitting || !agreedToTerms) ? 0.7 : 1 }}>
-                  {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString()} Hold`}
-                </button>
-              </div>
             </div>
-
-          </div>
+          </Elements>
         )}
 
         {/* Step 4: Confirmation & Thank You */}

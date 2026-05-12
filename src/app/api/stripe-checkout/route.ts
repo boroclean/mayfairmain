@@ -12,43 +12,28 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { flightId, departure, destination, date, time, aircraft, price, passengerName, passengerEmail } = body;
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      mode: 'payment',
-      customer_email: passengerEmail,
-      payment_intent_data: {
-        capture_method: 'manual', // Card is authorized but NOT charged — soft hold
-        description: `Soft Hold — ${departure} → ${destination} (${date})`,
-        metadata: {
-          flightId,
-          departure,
-          destination,
-          date,
-          time,
-          aircraft,
-          fullFlightPrice: price,
-          passengerName,
-          passengerEmail,
-        },
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(price * 100), // Convert to cents
+      currency: 'eur',
+      automatic_payment_methods: {
+        enabled: true,
       },
-      line_items: [
-        {
-          price_data: {
-            currency: 'eur',
-            product_data: {
-              name: `Soft Hold — ${departure} → ${destination}`,
-              description: `${date} at ${time} · ${aircraft} · Card authorization only — no charge until confirmed`,
-            },
-            unit_amount: SOFT_HOLD_AMOUNT_EUR * 100,
-          },
-          quantity: 1,
-        },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://mayfairmain.vercel.app'}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://mayfairmain.vercel.app'}/checkout/${flightId}`,
+      capture_method: 'manual', // Card is authorized but NOT charged — soft hold
+      description: `Soft Hold — ${departure} → ${destination} (${date})`,
+      metadata: {
+        flightId,
+        departure,
+        destination,
+        date,
+        time,
+        aircraft,
+        fullFlightPrice: price,
+        passengerName,
+        passengerEmail,
+      },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
     console.error('Stripe error:', err);
     return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
