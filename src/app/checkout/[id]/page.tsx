@@ -170,9 +170,11 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   <input type="number" value={passengers} onChange={e => setPassengers(e.target.value)} placeholder="e.g. 4" min="1" max={flight.seats} style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                 </div>
               </div>
-
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Dietary Requirements & Notes</label>
+                  <textarea rows={3} placeholder="e.g. Vegetarian catering requested" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none", resize: "none" }} />
+                </div>
               </div>
-            </div>
 
             {/* Pet Policy Section */}
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
