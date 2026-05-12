@@ -212,8 +212,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Pet Policy Section */}
-            <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Travel with Pets</h2>
+            <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", marginBottom: "2rem" }}>
+              <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "1rem", fontFamily: "var(--font-heading)" }}>Travel with Pets</h2>
               
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
@@ -264,8 +264,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
 
             {/* Insurance Section */}
-            <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "3rem" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Cancellation Insurance</h2>
+            <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", marginBottom: "3rem" }}>
+              <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "1rem", fontFamily: "var(--font-heading)" }}>Cancellation Insurance</h2>
               
               <div style={{ border: "1px solid rgba(212, 175, 55, 0.3)", borderRadius: "8px", overflow: "hidden" }}>
                 {/* Header */}
