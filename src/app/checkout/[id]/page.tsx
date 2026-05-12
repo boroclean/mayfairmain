@@ -31,6 +31,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const [passengerEmail, setPassengerEmail] = useState('');
   const [passengerPhone, setPassengerPhone] = useState('');
   const [passengers, setPassengers] = useState('');
+  const [petType, setPetType] = useState('none'); // 'none', 'dog', 'cat'
 
   useEffect(() => {
     async function fetchFlight() {
@@ -51,7 +52,38 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   if (loading) return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-gold)" }}>Loading Secure Checkout...</div>;
   if (!flight) return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>Flight not found or no longer available.</div>;
 
-  const totalPrice = flight.net_price + flight.broker_fee;
+  const isUKDestination = flight && (
+    flight.destination_airport.toLowerCase().includes("london") ||
+    flight.destination_airport.toLowerCase().includes("uk") ||
+    flight.destination_airport.toLowerCase().includes("fab") ||
+    flight.destination_airport.toLowerCase().includes("bqh") ||
+    flight.destination_airport.toLowerCase().includes("ltn") ||
+    flight.destination_airport.toLowerCase().includes("lcy")
+  );
+
+  const getPetSurcharge = () => {
+    if (petType === 'none' || !isUKDestination) return 0;
+    
+    const dest = flight.destination_airport.toUpperCase();
+    
+    // Specific airport fees based on policy
+    if (dest.includes("FAB") || dest.includes("EGLF")) return 300; // Farnborough
+    if (dest.includes("BQH") || dest.includes("EGKB")) return 350; // Biggin Hill
+    if (dest.includes("STN") || dest.includes("EGSS")) return 450; // Stansted
+    if (dest.includes("EGSC")) return 0; // Cambridge
+    if (dest.includes("EGMD")) return 350; // Lydd
+    if (dest.includes("EGNM")) return 200; // Leeds
+    if (dest.includes("EGBJ")) return 200; // Glos
+    if (dest.includes("EGTK")) return 350; // Oxford
+    if (dest.includes("EGPH")) return 470; // Edinburgh
+    if (dest.includes("EGCC")) return 450; // Manchester
+    if (dest.includes("EGKK")) return 650; // Gatwick
+    
+    return 350; // Default fallback for UK
+  };
+
+  const petSurcharge = getPetSurcharge();
+  const totalPrice = flight.net_price + flight.broker_fee + petSurcharge;
   const depositAmount = 2000;
   const balanceAmount = totalPrice - depositAmount;
 
@@ -108,7 +140,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
       <section style={{ padding: "4rem 2rem", flex: 1, display: "flex", justifyContent: "center" }}>
         <div className="mobile-stack-reverse" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
-          
+
           {/* Left Side: Booking Form */}
           <div>
             <h1 style={{ fontSize: "2.5rem", color: "var(--accent-gold)", marginBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Complete Your Booking</h1>
@@ -116,7 +148,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
               <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Passenger Details</h2>
-              
+
               <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Lead Passenger Full Name</label>
@@ -139,16 +171,67 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Dietary Requirements & Notes</label>
-                <textarea rows={3} placeholder="e.g. Vegetarian catering requested" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none", resize: "none" }} />
+              </div>
+            </div>
+
+            {/* Pet Policy Section */}
+            <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
+              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Travel with Pets</h2>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Are you traveling with a pet?</label>
+                  <div style={{ display: "flex", gap: "1rem" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                      <input type="radio" name="petType" value="none" checked={petType === 'none'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
+                      None
+                    </label>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                      <input type="radio" name="petType" value="dog" checked={petType === 'dog'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
+                      Dog 🐶
+                    </label>
+                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                      <input type="radio" name="petType" value="cat" checked={petType === 'cat'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
+                      Cat 🐱
+                    </label>
+                  </div>
+                </div>
+
+                {isUKDestination && petSurcharge > 0 && (
+                  <div style={{ padding: "1.5rem", background: "rgba(212, 175, 55, 0.05)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "4px" }}>
+                    <p style={{ color: "var(--accent-gold)", fontSize: "0.9rem", fontWeight: 600, marginBottom: "0.5rem" }}>🇬🇧 UK Pet Travel Notice</p>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                      Flights entering the United Kingdom with pets are subject to strict regulations. A mandatory pet entry fee and custom handling fee apply. A surcharge of <strong>€{petSurcharge}</strong> has been added to your total for this destination.
+                    </p>
+                  </div>
+                )}
+
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem" }}>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Pet Policy Rules</p>
+                  <ul style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", lineHeight: 1.6 }}>
+                    <li>Max weight 8 kg.</li>
+                    <li>Dogs should wear a muzzle and must sit on a blanket during the flight (provided by owner).</li>
+                    <li>Must be on a leash and fixed.</li>
+                    <li>Any damage to the airplane must be covered by the passenger.</li>
+                    <li>The Commander has the right to deny the flight in case of unruly or aggressive animals.</li>
+                  </ul>
+                </div>
+
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "1rem" }}>
+                  <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.5rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>UK Entry Requirements</p>
+                  <ol style={{ fontSize: "0.85rem", color: "var(--text-secondary)", paddingLeft: "1.2rem", lineHeight: 1.6 }}>
+                    <li>Pet must be microchipped.</li>
+                    <li>Vaccinated against rabies.</li>
+                    <li>Treated for tick and tapeworm by a vet 24-48 hours prior to departure.</li>
+                  </ol>
+                </div>
               </div>
             </div>
 
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
               <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Secure Soft Hold Authorization</h2>
               <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "2rem", lineHeight: 1.6 }}>
-                Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly. 
+                Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly.
                 Please provide your card details to place a secure <strong>€2,000 hold</strong>. If the flight is unavailable, the hold is released instantly.
               </p>
 
@@ -171,12 +254,12 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               <div style={{ display: "flex", gap: "0.5rem", marginTop: "2rem", alignItems: "flex-start" }}>
-                <input 
-                  type="checkbox" 
-                  id="client-terms" 
-                  checked={agreedToTerms} 
-                  onChange={(e) => setAgreedToTerms(e.target.checked)} 
-                  style={{ accentColor: "var(--accent-gold)", marginTop: "4px" }} 
+                <input
+                  type="checkbox"
+                  id="client-terms"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  style={{ accentColor: "var(--accent-gold)", marginTop: "4px" }}
                 />
                 <label htmlFor="client-terms" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.5, cursor: "pointer" }}>
                   I expressly agree to the <Link href="/terms" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Charter Terms & Conditions</Link>, and acknowledge that Empty Legs are subject to cancellation if the primary flight alters.
@@ -207,7 +290,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", position: "sticky", top: "2rem" }}>
               <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
                 <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
-                
+
                 <div style={{ marginBottom: "1.5rem" }}>
                   <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
                   <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.departure_airport)} {flight.departure_airport}</div>
