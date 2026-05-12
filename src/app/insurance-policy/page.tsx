@@ -3,25 +3,6 @@
 import Link from "next/link";
 
 export default function InsurancePolicyPage() {
-  const headerStyle = {
-    color: "var(--accent-gold)",
-    fontSize: "1.4rem",
-    marginTop: "2.5rem",
-    marginBottom: "1rem",
-    fontFamily: "var(--font-heading)",
-    borderBottom: "1px solid rgba(212, 175, 55, 0.1)",
-    paddingBottom: "0.5rem"
-  };
-
-  const textStyle = {
-    fontSize: "1rem",
-    color: "var(--text-secondary)",
-    lineHeight: 1.8,
-    whiteSpace: "pre-wrap",
-    fontFamily: "var(--font-body)",
-    marginBottom: "1.5rem"
-  };
-
   return (
     <main style={{ minHeight: "100vh", background: "var(--bg-primary)", color: "var(--text-primary)", padding: "4rem 2rem", display: "flex", justifyContent: "center" }}>
       <div style={{ maxWidth: "800px", width: "100%", background: "var(--bg-secondary)", padding: "4rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
@@ -32,16 +13,17 @@ export default function InsurancePolicyPage() {
           <p style={{ color: "var(--text-secondary)", fontSize: "1.1rem", textTransform: "uppercase", letterSpacing: "0.1em" }}>Refundable Booking Terms & Conditions</p>
         </div>
 
-        {/* Content with highlighted headers */}
-        <div style={textStyle}>{`You may be eligible to receive a refund if…
+        {/* Content with pre-wrap to preserve exact text and spacing */}
+        <div style={{ fontSize: "1rem", color: "var(--text-secondary)", lineHeight: 1.8, whiteSpace: "pre-wrap", fontFamily: "var(--font-body)" }}>
+{`You may be eligible to receive a refund if…
 
 (Certain words in this document are in bold for clarity, and their meanings have been defined later in this document)
 
 You cannot Attend Your Booking due to any of the reasons listed below, and You have provided us with the evidence requested.
 
-We consider the following reason, subject to Our General Conditions of Refund:`}</div>
+We consider the following reason, subject to Our General Conditions of Refund:
 
-        <div style={headerStyle}>Illness / Injury (including Covid)
+Illness / Injury (including Covid)
 Pre-existing Medical Condition
 Pregnancy Complication
 Death of an Immediate Family Member
@@ -56,16 +38,15 @@ Jury Service
 Court Summons
 Armed Forces & Emergency Services Recall
 Relocated for Work
-Changes to Examination Dates</div>
-
-        <div style={textStyle}>{`If the Booked Event is cancelled or postponed by the provider, You should contact Our Customer Service team directly. 
+Changes to Examination Dates
+If the Booked Event is cancelled or postponed by the provider, You should contact Our Customer Service team directly. 
 
 We may in addition to the above, consider other Emergency Circumstances at Our discretion.
 
-You must read the General Conditions of Refund, and the individual reasons section below to understand what We may or may not cover.`}</div>
+You must read the General Conditions of Refund, and the individual reasons section below to understand what We may or may not cover.
 
-        <div style={headerStyle}>General Conditions of Refund</div>
-        <div style={textStyle}>{`Any reason for a refund must not have been foreseeable when You made the Booking.
+General Conditions of Refund
+Any reason for a refund must not have been foreseeable when You made the Booking.
 We do not refund You if You made Your Booking in error, or if it is no longer wanted or needed.
 If the Booked Event is cancelled, postponed and/or cannot be fulfilled by the Provider, please contact Our Customer Service team directly for further advice about Your Refund.
 You must make all necessary arrangements to Attend the Booked Event, including arranging any necessary travel or documents, and allowing suitable travel time.
@@ -73,10 +54,10 @@ We don’t refund You where You are worried about a Covid infection or where You
 We may ask for any reasonable additional evidence required to support Your application, which may include proof of eligibility and intent to Attend the Booked Event.
 You will be asked to provide supporting evidence at Your own expense, and a copy of the Booking Confirmation.
 You will be asked to provide Your bank account details so We can make the refund payment directly to Your chosen bank account.
-Please note that there is a maximum refund value per transaction, and We will not refund You for an amount which exceeds $15,000 (fifteen thousand US Dollars) or local currency equivalent.`}</div>
+Please note that there is a maximum refund value per transaction, and We will not refund You for an amount which exceeds $15,000 (fifteen thousand US Dollars) or local currency equivalent. 
 
-        <div style={headerStyle}>Illness / Injury</div>
-        <div style={textStyle}>{`Illness / Injury: means an Illness or accidental Injury to a person in the Booking or someone in Your Immediate Household.
+Illness / Injury
+Illness / Injury: means an Illness or accidental Injury to a person in the Booking or someone in Your Immediate Household.
 
 What We do not refund: 
 
@@ -91,10 +72,10 @@ Registered Medical Doctor’s note or Medical Certificate confirming:
 The details of the illness or injury;
 The date it first occurred;
 That it prevents the person from Attending the Booked Event; and
-Proof of relationship if the person is not in the Booking.`}</div>
+Proof of relationship if the person is not in the Booking.
 
-        <div style={headerStyle}>Pre-existing Medical Condition</div>
-        <div style={textStyle}>{`Pre-existing Medical Condition: means a physical or mental health condition that You already had when You made the Booking that would not usually prevent You Attending the Booked Event.
+Pre-existing Medical Condition
+Pre-existing Medical Condition: means a physical or mental health condition that You already had when You made the Booking that would not usually prevent You Attending the Booked Event.
 
 What We do not refund: 
 
@@ -107,10 +88,10 @@ Registered Medical Doctor’s note or Medical Certificate confirming:
 
 Details of the illness;
 The date it changed; and
-That it prevents the person from Attending the Booked Event.`}</div>
+That it prevents the person from Attending the Booked Event.
 
-        <div style={headerStyle}>Pregnancy Complication</div>
-        <div style={textStyle}>{`Pregnancy Complication: means a complication of pregnancy You were unaware of when Booking and which means You cannot Attend the Booked Event.
+Pregnancy Complication
+Pregnancy Complication: means a complication of pregnancy You were unaware of when Booking and which means You cannot Attend the Booked Event.
 
 What We do not refund: 
 
@@ -121,10 +102,10 @@ Registered Medical Doctor’s note or Medical Certificate confirming:
 
 Details of the complication;
 The date it occurred; and
-That it prevents the person from Attending the Booked Event.`}</div>
+That it prevents the person from Attending the Booked Event.
 
-        <div style={headerStyle}>Death</div>
-        <div style={textStyle}>{`Death: means Your death any time prior to the Booked Event or the death of an Immediate Family Member or any person(s) in the Group due to Attend, within 35 days of the Booked Event.
+Death
+Death: means Your death any time prior to the Booked Event or the death of an Immediate Family Member or any person(s) in the Group due to Attend, within 35 days of the Booked Event.
 
 What We do not refund: 
 
@@ -132,10 +113,10 @@ Where You cannot provide evidence that the person was Your Immediate Family Memb
 Evidence required:
 
 A death certificate.
-Proof of relationship.`}</div>
+Proof of relationship.
 
-        <div style={headerStyle}>Public Transport Failure</div>
-        <div style={textStyle}>{`Public Transport Failure: means unexpected disruption or failure of the public bus, train, tram or ferry network which is not foreseeable before the date of the Booked Event.
+Public Transport Failure
+Public Transport Failure: means unexpected disruption or failure of the public bus, train, tram or ferry network which is not foreseeable before the date of the Booked Event.
 
 What We do not refund:
 
@@ -143,10 +124,10 @@ If there is a financial failure of any Transport provider.
 Heavy traffic or road closures.
 Evidence required: 
 
-Confirmation of failure or disruption of the public transport. (This can usually be obtained from the transport company’s website)`}</div>
+Confirmation of failure or disruption of the public transport. (This can usually be obtained from the transport company’s website)
 
-        <div style={headerStyle}>Flight disruption</div>
-        <div style={textStyle}>{`Flight Disruption: means cancellation or significant delay of flight(s) which You were unaware of before the date of the Booked Event, that prevents You from Attending the Booked Event.
+Flight disruption
+Flight Disruption: means cancellation or significant delay of flight(s) which You were unaware of before the date of the Booked Event, that prevents You from Attending the Booked Event.
 
 What We do not refund: 
 
@@ -157,10 +138,10 @@ If the purpose or reason for which You booked Your flight to Attend the Booked E
 If You have not allowed sufficient time between flights. If You have only secured a standby position for the flight.
 Evidence required: 
 
-A copy of Your airline ticket and notice of cancellation or disruption from the airline.`}</div>
+A copy of Your airline ticket and notice of cancellation or disruption from the airline.
 
-        <div style={headerStyle}>Transport Breakdown</div>
-        <div style={textStyle}>{`Transport Breakdown: means in the 24 hours prior to the Booked Event, the mechanical breakdown accident, fire or theft of a car, motorcycle, taxi, minibus or coach taking You to the Booked Event.
+Transport Breakdown
+Transport Breakdown: means in the 24 hours prior to the Booked Event, the mechanical breakdown accident, fire or theft of a car, motorcycle, taxi, minibus or coach taking You to the Booked Event.
 
 What We do not refund:
 
@@ -170,10 +151,10 @@ Any vehicle You plan to use during the Booked Event.
 Evidence required: 
 
 Breakdown – A copy of the call-out note from a national breakdown recovery service. 
-An incident number or report from the Police or relevant traffic authority.`}</div>
+An incident number or report from the Police or relevant traffic authority.
 
-        <div style={headerStyle}>Severe Weather</div>
-        <div style={textStyle}>{`Severe Weather: means weather where a Government Agency has issued warnings not to travel which means You cannot Attend the Booked Event.
+Severe Weather
+Severe Weather: means weather where a Government Agency has issued warnings not to travel which means You cannot Attend the Booked Event.
 
 What We do not refund: 
 
@@ -181,10 +162,10 @@ Adverse weather with no Government Agency warnings not to travel.
 Evidence required:
 
 A copy of the travel warning from the Government Agency.
-Confirmation of relevant route closures.`}</div>
+Confirmation of relevant route closures.
 
-        <div style={headerStyle}>Home Emergency</div>
-        <div style={textStyle}>{`Home Emergency: means a Burglary, Fire, Malicious Damage or Flood at Your main private residence within 48 hours immediately before the Booked Event.
+Home Emergency
+Home Emergency: means a Burglary, Fire, Malicious Damage or Flood at Your main private residence within 48 hours immediately before the Booked Event.
 
 What We do not refund: 
 
@@ -192,10 +173,10 @@ Any Home Emergency for which You cannot provide Evidence as below.
 Evidence required: 
 
 Burglary, Flood, Malicious Damage – A Police reference number or evidence from submitting a claim to Your home insurance company.
-Fire – A report from the fire service and/or police.`}</div>
+Fire – A report from the fire service and/or police.
 
-        <div style={headerStyle}>Theft of Document(s)</div>
-        <div style={textStyle}>{`Theft of Document(s): means the theft of a document necessary for the Booked Event, which cannot be replaced in time for the Booked Event.
+Theft of Document(s)
+Theft of Document(s): means the theft of a document necessary for the Booked Event, which cannot be replaced in time for the Booked Event.
 
 What We do not refund: 
 
@@ -204,10 +185,10 @@ Lost documents.
 Evidence required: 
 
 A police report or crime number to confirm the theft was dated within 24 hours of the Booked Event. (Self-declaration not accepted)
-An email from the Booking agent confirming they are unable to replace/re-issue the tickets.`}</div>
+An email from the Booking agent confirming they are unable to replace/re-issue the tickets.
 
-        <div style={headerStyle}>Relocated for Work</div>
-        <div style={textStyle}>{`Relocated for Work: means a requirement to move address imposed on You by Your current employer, unknown to You at the date of Booking. The move may be temporary or permanent and must be to a location that makes the travel requirement to Attend the Booked Event unreasonable.
+Relocated for Work
+Relocated for Work: means a requirement to move address imposed on You by Your current employer, unknown to You at the date of Booking. The move may be temporary or permanent and must be to a location that makes the travel requirement to Attend the Booked Event unreasonable.
 
 What We do not refund: 
 
@@ -218,10 +199,10 @@ Where You are the business owner or registered Director, or where a member of Yo
 Evidence required: 
 
 A letter from Your current employer on a company letterhead confirming the relocation details.
-Evidence of living at the new address.`}</div>
+Evidence of living at the new address.
 
-        <div style={headerStyle}>Workplace Redundancy</div>
-        <div style={textStyle}>{`Workplace Redundancy: means You are unexpectedly made compulsorily redundant by Your employer with whom You have been permanently employed full-time for a period of at least 2 years.
+Workplace Redundancy
+Workplace Redundancy: means You are unexpectedly made compulsorily redundant by Your employer with whom You have been permanently employed full-time for a period of at least 2 years.
 
 What We do not refund:
 
@@ -232,13 +213,13 @@ Evidence required:
 
 An official letter of compulsory redundancy from Your employer.
 Evidence that You have been in this employment for over two years.
-Bank statements showing that You have not received a salary since the redundancy date (required if the Event Date is more than 6 months after redundancy).`}</div>
+Bank statements showing that You have not received a salary since the redundancy date (required if the Event Date is more than 6 months after redundancy).
 
-        <div style={headerStyle}>Applications:</div>
-        <div style={textStyle}>{`Applications may be submitted or resubmitted within 2 months of the Event Date, provided updated and relevant evidence is supplied to show continued unemployment.`}</div>
+Applications:
+Applications may be submitted or resubmitted within 2 months of the Event Date, provided updated and relevant evidence is supplied to show continued unemployment.
 
-        <div style={headerStyle}>Armed Forces & Emergency Services Recall</div>
-        <div style={textStyle}>{`Armed Forces & Emergency Services Recall: means You as a member of the ArmedForces, Reserve Armed Forces or Emergency Services are recalled to work on the date of the Booked Event or are posted overseas and cannot Attend the Booked Event.
+Armed Forces & Emergency Services Recall
+Armed Forces & Emergency Services Recall: means You as a member of the ArmedForces, Reserve Armed Forces or Emergency Services are recalled to work on the date of the Booked Event or are posted overseas and cannot Attend the Booked Event.
 
 What We do not refund: 
 
@@ -246,38 +227,38 @@ You were aware of or had scheduled work on the date of the Booked Event, prior t
 You made an unsuccessful request for annual leave for the date of the Booked Event.
 Evidence required: 
 
-A note from Your Commanding Officer or Line Manager to confirm being called into work or duty and that this was not Your original schedule.`}</div>
+A note from Your Commanding Officer or Line Manager to confirm being called into work or duty and that this was not Your original schedule.
 
-        <div style={headerStyle}>Jury Service</div>
-        <div style={textStyle}>{`Jury Service: means a summons for You to Attend Jury Service over the date of the Booked Event of which You were unaware at the time of making the Booking.
+Jury Service
+Jury Service: means a summons for You to Attend Jury Service over the date of the Booked Event of which You were unaware at the time of making the Booking.
 
 What We do not refund: Any Jury Service for which You cannot provide Evidence as below.
 Evidence required:
 
-A copy of the letter requiring Jury Service.`}</div>
+A copy of the letter requiring Jury Service.
 
-        <div style={headerStyle}>Court Summons</div>
-        <div style={textStyle}>{`Court Summons: means You are summoned to appear as a witness in court proceedings on the day of the Booked Event, which You were unaware of at the time of making the Booking.
+Court Summons
+Court Summons: means You are summoned to appear as a witness in court proceedings on the day of the Booked Event, which You were unaware of at the time of making the Booking.
 
 What We do not refund: 
 
 Any Court Summons in which You are not there as a witness, including civil and criminal cases where You are involved in the case Yourself as the plaintiff or defendant.
 Evidence required: 
 
-A copy of the Court Summons.`}</div>
+A copy of the Court Summons.
 
-        <div style={headerStyle}>Changes to Examination Dates</div>
-        <div style={textStyle}>{`Changes to Examination Dates: Means an unforeseen change to the date of an examination for which You were already registered, resulting in a conflict with the date(s) of the Booked Event.
+Changes to Examination Dates
+Changes to Examination Dates: Means an unforeseen change to the date of an examination for which You were already registered, resulting in a conflict with the date(s) of the Booked Event.
 
 What We do not refund: 
 
 Where the examination is being provided by a commercial business (not by an educational board).
 Evidence required:
 
-A copy of a notice from the examination body, school, college, or university confirming the date change.`}</div>
+A copy of a notice from the examination body, school, college, or university confirming the date change.
 
-        <div style={headerStyle}>Emergency Circumstances</div>
-        <div style={textStyle}>{`Emergency Circumstances: means an unforeseen circumstance completely outside Your control and of no fault of Your s and completely prevents You from Attending the Booked Event. The decision to refund is entirely at the discretion of Our Customer Service Team. We will consider these circumstances and have no obligation whatsoever to provide a refund.
+Emergency Circumstances
+Emergency Circumstances: means an unforeseen circumstance completely outside Your control and of no fault of Your s and completely prevents You from Attending the Booked Event. The decision to refund is entirely at the discretion of Our Customer Service Team. We will consider these circumstances and have no obligation whatsoever to provide a refund.
 
 What We do not refund: 
 
@@ -285,10 +266,10 @@ Anything which Our Customer Service Team considers is not intended to be include
 Any change to Your work schedule (other than the specific situations listed under Work Relocation or Emergency Services Recall sections of these terms).
 Evidence required:
 
- Any evidence requested by Our Customer Service Team to verify the emergency circumstances.`}</div>
+ Any evidence requested by Our Customer Service Team to verify the emergency circumstances.
 
-        <div style={headerStyle}>Exclusions (reasons for which We do not refund You)</div>
-        <div style={textStyle}>{`We do not refund for non-Attendance of a Booked Event directly or indirectly associated with any of the following:
+Exclusions (reasons for which We do not refund You)
+We do not refund for non-Attendance of a Booked Event directly or indirectly associated with any of the following:
 
 Communicable Disease.
 
@@ -297,10 +278,10 @@ Naturalisation, visa, fertility treatment, or any other appointments.
 Failing to comply with any law.
 Any Booking emanating from Cuba, Iran, North Korea, Russia, Sudan and/or Syria (this list may be amended and/or supplemented occasionally).
 Where exposed to any sanction, prohibition or restriction under United Nations resolutions or the trade or economic sanctions, laws or regulations of the European Union, United Kingdom or United States of America.
-Where there is another Paying Party.`}</div>
+Where there is another Paying Party.
 
-        <div style={headerStyle}>Definitions</div>
-        <div style={textStyle}>{`The following words or phrases have the meaning as set out below wherever they appear in bold in this document:
+Definitions
+The following words or phrases have the meaning as set out below wherever they appear in bold in this document:
 
 “We/Us/Our /Ours”: means the Party responsible for the refund and refers to the Booking agent with whom You have made the Booking and/or the authorised third party who administers the refund. 
 “You/Your /Yourself”: means the person who has made a Booking alone or as part of a group with Us.
@@ -314,12 +295,13 @@ Where there is another Paying Party.`}</div>
 “Immediate Family Member”: means Your husband, wife, partner, parent, child, sibling, grandparent, or stepfamily.
 “Immediate Household”: means all people living in the same family unit, not necessarily blood-related, who have a reciprocal, natural, and/or moral duty to, and do, provide support for one another. This does not include persons merely sharing the same general quarters, such as tenants, occupiers, and/or friends.
 “Paying Party”: means any organisation or body that has a legal liability to pay compensation for the failure of the service, against whom You have a right of refund.
-“Provider: means the company or organisation that is responsible for running the Booked Event.`}</div>
+“Provider: means the company or organisation that is responsible for running the Booked Event.
 
-        <div style={headerStyle}>IMPORTANT</div>
-        <div style={textStyle}>{`This document's translation from English to another language is only for assistance and information purposes. In the event of a refund application, the English-language version shall be the basis of any settlement.
+IMPORTANT
+This document's translation from English to another language is only for assistance and information purposes. In the event of a refund application, the English-language version shall be the basis of any settlement.
 
-A Refundable Booking is an optional extension to Our standard Terms & Conditions of sale and trade, under which You are eligible to receive a refund for certain, defined circumstances outlined in this document.`}</div>
+A Refundable Booking is an optional extension to Our standard Terms & Conditions of sale and trade, under which You are eligible to receive a refund for certain, defined circumstances outlined in this document.`}
+        </div>
 
         {/* Footer */}
         <div style={{ textAlign: "center", marginTop: "4rem", paddingTop: "2rem", borderTop: "1px solid rgba(212, 175, 55, 0.2)" }}>
