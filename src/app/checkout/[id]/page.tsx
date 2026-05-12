@@ -207,8 +207,8 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
           <div className="step-transition" style={{ width: "100%", maxWidth: "800px" }}>
             <div style={{ textAlign: "center", marginBottom: "3rem" }}>
               <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 1</span>
-              <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Flight Customization</h1>
-              <p style={{ color: "var(--text-secondary)", marginTop: "0.5rem" }}>Tailor your GlobeAir flight experience.</p>
+              <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Additional Services</h1>
+              <p style={{ color: "var(--text-secondary)", marginTop: "0.5rem" }}>Select optional services for your GlobeAir flight.</p>
             </div>
 
             {/* Pet Policy Section */}
