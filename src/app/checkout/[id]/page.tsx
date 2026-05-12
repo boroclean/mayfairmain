@@ -261,14 +261,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
             </div>
 
-            {/* Additional Information Section */}
-            <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Additional Information</h2>
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Dietary Requirements & Notes</label>
-                <textarea rows={3} value={additionalNotes} onChange={e => setAdditionalNotes(e.target.value)} placeholder="e.g. Vegetarian catering, preferred plane model requests, or any other notes" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none", resize: "none" }} />
-              </div>
-            </div>
+
 
             {/* Insurance Section */}
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "3rem" }}>
