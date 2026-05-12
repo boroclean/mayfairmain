@@ -339,10 +339,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Billing Details Section */}
-              <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
-                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Billing Details</h2>
+              <div style={{ background: "var(--bg-secondary)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "1rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>Billing Details</h2>
                 
-                <div style={{ display: "flex", gap: "1.5rem", marginBottom: "2rem" }}>
+                <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
                     <input type="radio" name="billingType" value="individual" checked={billingType === 'individual'} onChange={e => setBillingType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
                     Individual
@@ -353,45 +353,45 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   </label>
                 </div>
 
-                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>First Name</label>
-                    <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="e.g. John" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="e.g. John" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Last Name</label>
-                    <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="e.g. Smith" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="e.g. Smith" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                 </div>
 
                 {billingType === 'company' && (
-                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                  <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Company Name</label>
-                      <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. Acme Corp" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                      <input type="text" value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="e.g. Acme Corp" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>VAT / Tax Number</label>
-                      <input type="text" value={taxNumber} onChange={e => setTaxNumber(e.target.value)} placeholder="e.g. EU12345678" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                      <input type="text" value={taxNumber} onChange={e => setTaxNumber(e.target.value)} placeholder="e.g. EU12345678" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                     </div>
                   </div>
                 )}
 
-                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Email Address</label>
-                    <input type="email" value={passengerEmail} onChange={e => setPassengerEmail(e.target.value)} placeholder="For invoices & agreement" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="email" value={passengerEmail} onChange={e => setPassengerEmail(e.target.value)} placeholder="For invoices & agreement" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Phone Number</label>
-                    <input type="tel" value={passengerPhone} onChange={e => setPassengerPhone(e.target.value)} placeholder="+44" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="tel" value={passengerPhone} onChange={e => setPassengerPhone(e.target.value)} placeholder="+44" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                 </div>
 
-                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Country</label>
-                    <input type="text" list="countries" value={billingCountry} onChange={e => setBillingCountry(e.target.value)} placeholder="Type or select country" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" list="countries" value={billingCountry} onChange={e => setBillingCountry(e.target.value)} placeholder="Type or select country" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                     <datalist id="countries">
                       <option value="United Kingdom" />
                       <option value="France" />
@@ -409,37 +409,20 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>City</label>
-                    <input type="text" value={billingCity} onChange={e => setBillingCity(e.target.value)} placeholder="e.g. London" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" value={billingCity} onChange={e => setBillingCity(e.target.value)} placeholder="e.g. London" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                 </div>
 
-                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Postal Code</label>
-                    <input type="text" value={billingPostalCode} onChange={e => setBillingPostalCode(e.target.value)} placeholder="e.g. SW1A 1AA" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" value={billingPostalCode} onChange={e => setBillingPostalCode(e.target.value)} placeholder="e.g. SW1A 1AA" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Address (Street & Number)</label>
-                    <input type="text" value={billingStreetAddress} onChange={e => setBillingStreetAddress(e.target.value)} placeholder="e.g. 10 Downing Street" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" value={billingStreetAddress} onChange={e => setBillingStreetAddress(e.target.value)} placeholder="e.g. 10 Downing Street" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                 </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                {isGlobeAir && (
-                  <button onClick={() => setCurrentStep(1)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    Back
-                  </button>
-                )}
-                <button onClick={() => {
-                  if (!firstName || !lastName || !passengerEmail || !passengerPhone || !billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
-                    alert('Please fill in all billing details.');
-                    return;
-                  }
-                  setCurrentStep(3);
-                }} style={{ padding: "1rem 3rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto" }}>
-                  Proceed to Payment
-                </button>
               </div>
             </div>
 
@@ -493,6 +476,24 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                     <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Buttons moved here */}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
+                {isGlobeAir && (
+                  <button onClick={() => setCurrentStep(1)} style={{ padding: "1rem 1.5rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                    Back
+                  </button>
+                )}
+                <button onClick={() => {
+                  if (!firstName || !lastName || !passengerEmail || !passengerPhone || !billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
+                    alert('Please fill in all billing details.');
+                    return;
+                  }
+                  setCurrentStep(3);
+                }} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto" }}>
+                  Proceed to Payment
+                </button>
               </div>
             </div>
 
@@ -512,9 +513,9 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
               {/* Secure Soft Hold Section */}
-              <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
-                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Secure Soft Hold Authorization</h2>
-                <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "2rem", lineHeight: 1.6 }}>
+              <div style={{ background: "var(--bg-secondary)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "1rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "0.5rem" }}>Secure Soft Hold Authorization</h2>
+                <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem", lineHeight: 1.6 }}>
                   Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly.
                   Please provide your card details to place a secure <strong>€{depositAmount.toLocaleString()} hold</strong>. If the flight is unavailable, the hold is released instantly.
                 </p>
@@ -523,35 +524,26 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Card Number</label>
-                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Expiry Date</label>
-                      <input type="text" placeholder="MM / YY" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                      <input type="text" placeholder="MM / YY" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                     </div>
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                       <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>CVV</label>
-                      <input type="text" placeholder="xxx" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                      <input type="text" placeholder="xxx" style={{ padding: "10px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginTop: "2rem", background: "rgba(255,255,255,0.02)", padding: "1.5rem", borderRadius: "4px" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: "0.75rem", marginTop: "1rem", background: "rgba(255,255,255,0.02)", padding: "1rem", borderRadius: "4px" }}>
                   <input type="checkbox" id="terms" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} style={{ marginTop: "3px", accentColor: "var(--accent-gold)" }} />
                   <label htmlFor="terms" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", cursor: "pointer" }}>
                     I understand this is a hold, not a charge. I agree to the <Link href="/terms" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Terms of Service</Link> and the cancellation policy.
                   </label>
                 </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <button onClick={() => setCurrentStep(2)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                  Back
-                </button>
-                <button onClick={handleSoftHold} disabled={isSubmitting || !agreedToTerms} style={{ padding: "1rem 3rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: (isSubmitting || !agreedToTerms) ? 0.7 : 1 }}>
-                  {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString()} Hold`}
-                </button>
               </div>
             </div>
 
@@ -605,6 +597,16 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                     <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Buttons moved here */}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
+                <button onClick={() => setCurrentStep(2)} style={{ padding: "1rem 2rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  Back
+                </button>
+                <button onClick={handleSoftHold} disabled={isSubmitting || !agreedToTerms} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: (isSubmitting || !agreedToTerms) ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: (isSubmitting || !agreedToTerms) ? 0.7 : 1 }}>
+                  {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString()} Hold`}
+                </button>
               </div>
             </div>
 
