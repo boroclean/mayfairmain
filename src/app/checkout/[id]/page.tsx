@@ -55,6 +55,11 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   if (loading) return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--accent-gold)" }}>Loading Secure Checkout...</div>;
   if (!flight) return <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>Flight not found or no longer available.</div>;
 
+  const isGlobeAir = flight && (
+    flight.aircraft_model === "Cessna Citation Mustang" || 
+    flight.aircraft_model?.includes("Cessna")
+  );
+
   const isUKDestination = flight && (
     flight.destination_airport.toLowerCase().includes("london") ||
     flight.destination_airport.toLowerCase().includes("uk") ||
@@ -171,57 +176,59 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               </div>
 
             {/* Pet Policy Section */}
-            <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Travel with Pets</h2>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                  <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Are you traveling with a pet?</label>
-                  <div style={{ display: "flex", gap: "1rem" }}>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
-                      <input type="radio" name="petType" value="none" checked={petType === 'none'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
-                      None
-                    </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
-                      <input type="radio" name="petType" value="dog" checked={petType === 'dog'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
-                      Dog 🐶
-                    </label>
-                    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
-                      <input type="radio" name="petType" value="cat" checked={petType === 'cat'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
-                      Cat 🐱
-                    </label>
-                  </div>
-                </div>
-
-                {petType !== 'none' && (
-                  <>
-                    <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                        <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Pet Weight</label>
-                        <input type="text" value={petWeight} onChange={e => setPetWeight(e.target.value)} placeholder="e.g. 5 kg" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                        <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Passport Number</label>
-                        <input type="text" value={petPassport} onChange={e => setPetPassport(e.target.value)} placeholder="e.g. EU123456" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
-                      </div>
-                    </div>
-
-                    <div style={{ padding: "1rem", background: "rgba(212, 175, 55, 0.05)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "4px" }}>
-                      <p style={{ color: "var(--accent-gold)", fontSize: "0.85rem", lineHeight: 1.5 }}>
-                        Any pets with a maximum weight of 8 kg are welcome on-board. For further information please contact our Customer Care Team.
-                      </p>
-                    </div>
-
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <input type="checkbox" id="petPolicy" checked={agreedToPetPolicy} onChange={e => setAgreedToPetPolicy(e.target.checked)} style={{ accentColor: "var(--accent-gold)" }} />
-                      <label htmlFor="petPolicy" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", cursor: "pointer" }}>
-                        I agree to the <Link href="/pet-policy" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Pet Policy</Link>.
+            {isGlobeAir && (
+              <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "2rem" }}>
+                <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Travel with Pets</h2>
+                
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                    <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Are you traveling with a pet?</label>
+                    <div style={{ display: "flex", gap: "1rem" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                        <input type="radio" name="petType" value="none" checked={petType === 'none'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
+                        None
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                        <input type="radio" name="petType" value="dog" checked={petType === 'dog'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} style={{ accentColor: "var(--accent-gold)" }} />
+                        Dog 🐶
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
+                        <input type="radio" name="petType" value="cat" checked={petType === 'cat'} onChange={e => setPetType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} style={{ accentColor: "var(--accent-gold)" }} />
+                        Cat 🐱
                       </label>
                     </div>
-                  </>
-                )}
+                  </div>
+
+                  {petType !== 'none' && (
+                    <>
+                      <div className="mobile-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                          <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Pet Weight</label>
+                          <input type="text" value={petWeight} onChange={e => setPetWeight(e.target.value)} placeholder="e.g. 5 kg" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                          <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Passport Number</label>
+                          <input type="text" value={petPassport} onChange={e => setPetPassport(e.target.value)} placeholder="e.g. EU123456" style={{ padding: "14px", background: "rgba(10, 17, 13, 0.7)", border: "1px solid rgba(212, 175, 55, 0.3)", color: "var(--text-primary)", outline: "none" }} />
+                        </div>
+                      </div>
+
+                      <div style={{ padding: "1rem", background: "rgba(212, 175, 55, 0.05)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "4px" }}>
+                        <p style={{ color: "var(--accent-gold)", fontSize: "0.85rem", lineHeight: 1.5 }}>
+                          Any pets with a maximum weight of 8 kg are welcome on-board. For further information please contact our Customer Care Team.
+                        </p>
+                      </div>
+
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <input type="checkbox" id="petPolicy" checked={agreedToPetPolicy} onChange={e => setAgreedToPetPolicy(e.target.checked)} style={{ accentColor: "var(--accent-gold)" }} />
+                        <label htmlFor="petPolicy" style={{ fontSize: "0.85rem", color: "var(--text-secondary)", cursor: "pointer" }}>
+                          I agree to the <Link href="/pet-policy" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Pet Policy</Link>.
+                        </label>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
               <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Secure Soft Hold Authorization</h2>
