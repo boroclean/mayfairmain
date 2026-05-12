@@ -473,9 +473,9 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
             {/* Right Column: Flight Summary */}
             <div style={{ position: "sticky", top: "2rem", height: "fit-content" }}>
-              <div style={{ background: "var(--bg-secondary)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", overflow: "hidden" }}>
-                <div style={{ padding: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <h3 style={{ fontFamily: "var(--font-heading)", fontSize: "1.1rem", color: "var(--text-primary)", marginBottom: "1rem", letterSpacing: "0.05em" }}>FLIGHT SUMMARY</h3>
+              <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden" }}>
+                <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
+                  <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
                   
                   <div style={{ marginBottom: "1.5rem" }}>
                     <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
