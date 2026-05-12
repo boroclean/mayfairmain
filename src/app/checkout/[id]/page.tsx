@@ -206,7 +206,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         {currentStep === 1 && isGlobeAir && (
           <div className="step-transition" style={{ width: "100%", maxWidth: "800px" }}>
             <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-              <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 1 of 2</span>
+              <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 1</span>
               <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Flight Customization</h1>
               <p style={{ color: "var(--text-secondary)", marginTop: "0.5rem" }}>Tailor your GlobeAir flight experience.</p>
             </div>
@@ -272,12 +272,12 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
             {/* Insurance Section */}
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "3rem" }}>
-              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Flight Insurance</h2>
+              <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Cancellation Insurance</h2>
               <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem", background: "rgba(212, 175, 55, 0.05)", padding: "2rem", borderRadius: "8px" }}>
                 <input type="checkbox" id="insurance" checked={hasInsurance} onChange={e => setHasInsurance(e.target.checked)} style={{ marginTop: "5px", accentColor: "var(--accent-gold)", transform: "scale(1.2)" }} />
                 <div>
                   <label htmlFor="insurance" style={{ fontSize: "1rem", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer", display: "flex", justifyContent: "space-between", width: "100%" }}>
-                    <span>Add Comprehensive Flight Insurance</span>
+                    <span>Add Cancellation Insurance</span>
                     <span style={{ color: "var(--accent-gold)" }}>+€{insurancePrice.toLocaleString()}</span>
                   </label>
                   <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem", lineHeight: "1.5" }}>
@@ -315,7 +315,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
               
               <div style={{ textAlign: "center", marginBottom: "1rem" }}>
-                <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>{isGlobeAir ? "Step 2 of 2" : "Final Step"}</span>
+                <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 2</span>
                 <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Billing & Payment</h1>
               </div>
 
@@ -485,7 +485,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   </div>
                   {hasInsurance && (
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      <span>Flight Insurance</span>
+                      <span>Cancellation Insurance</span>
                       <span>€{insurancePrice.toLocaleString()}</span>
                     </div>
                   )}
