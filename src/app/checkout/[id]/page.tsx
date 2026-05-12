@@ -273,16 +273,42 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             {/* Insurance Section */}
             <div style={{ background: "var(--bg-secondary)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px", marginBottom: "3rem" }}>
               <h2 style={{ fontSize: "1.2rem", color: "var(--text-primary)", marginBottom: "2rem", borderBottom: "1px solid rgba(255,255,255,0.05)", paddingBottom: "1rem" }}>Cancellation Insurance</h2>
-              <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem", background: "rgba(212, 175, 55, 0.05)", padding: "2rem", borderRadius: "8px" }}>
-                <input type="checkbox" id="insurance" checked={hasInsurance} onChange={e => setHasInsurance(e.target.checked)} style={{ marginTop: "5px", accentColor: "var(--accent-gold)", transform: "scale(1.2)" }} />
-                <div>
-                  <label htmlFor="insurance" style={{ fontSize: "1rem", color: "var(--text-primary)", fontWeight: "600", cursor: "pointer", display: "flex", justifyContent: "space-between", width: "100%" }}>
-                    <span>Add Cancellation Insurance</span>
-                    <span style={{ color: "var(--accent-gold)" }}>+€{insurancePrice.toLocaleString()}</span>
-                  </label>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginTop: "0.5rem", lineHeight: "1.5" }}>
-                    Protect your flight with our premium insurance. Covers cancellation due to medical reasons, weather delays, and connection issues. (10% of total flight cost).
-                  </p>
+              
+              <div style={{ border: "1px solid rgba(212, 175, 55, 0.3)", borderRadius: "8px", overflow: "hidden" }}>
+                {/* Header */}
+                <div style={{ background: "rgba(212, 175, 55, 0.1)", padding: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <input type="checkbox" id="insurance" checked={hasInsurance} onChange={e => setHasInsurance(e.target.checked)} style={{ accentColor: "var(--accent-gold)", transform: "scale(1.2)" }} />
+                    <label htmlFor="insurance" style={{ fontWeight: "600", color: "var(--text-primary)", cursor: "pointer" }}>Refundable Booking</label>
+                    <span style={{ background: "#25D366", color: "white", fontSize: "0.7rem", padding: "2px 6px", borderRadius: "10px", textTransform: "uppercase" }}>Recommended</span>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ color: "var(--text-primary)", fontWeight: "bold" }}>+€{insurancePrice.toLocaleString()}</div>
+                    <div style={{ color: "var(--text-secondary)", fontSize: "0.8rem" }}>10% of Total</div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.5)" }}>
+                  <div style={{ background: "rgba(37, 211, 102, 0.1)", color: "#25D366", padding: "0.75rem", borderRadius: "4px", marginBottom: "1.5rem", fontSize: "0.9rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>✓ Illness / Injury (including Covid)</span>
+                    <Link href="/insurance-policy" target="_blank" style={{ color: "#25D366", textDecoration: "underline", fontSize: "0.8rem" }}>See details</Link>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", fontSize: "0.85rem", color: "var(--text-secondary)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Pre-existing Medical Conditions</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Home Emergency</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Public Transport Failure</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Theft of Documents</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Flight Disruption</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Court Summons</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Transport Breakdown</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><span style={{ color: "#25D366" }}>✓</span> Severe Weather</div>
+                  </div>
+
+                  <div style={{ marginTop: "1.5rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: "1.5" }}>
+                    Upgrade your booking and receive a refund if you cannot attend due to many reasons. See the full <Link href="/insurance-policy" target="_blank" style={{ color: "var(--accent-gold)", textDecoration: "underline" }}>Insurance Policy</Link>.
+                  </div>
                 </div>
               </div>
             </div>
