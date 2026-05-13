@@ -161,16 +161,26 @@ async function scrapeGlobeAir() {
         let price = flight.basePrice;
         try {
           console.log(`Navigating to flight page: ${flight.href}`);
-          await page.goto(flight.href, { waitUntil: 'networkidle' });
+          await page.goto(flight.href, { waitUntil: 'domcontentloaded', timeout: 60000 });
           await page.waitForTimeout(2000); // Wait for content
           
-          // Check for passenger selector and set to 4 if found
-          const paxSelector = 'select[name="trip[legs][0][pax_count]"]';
-          const hasPaxSelector = await page.$(paxSelector);
-          if (hasPaxSelector) {
-            console.log("Found passenger selector. Setting to 4...");
-            await page.selectOption(paxSelector, '4');
-            await page.waitForTimeout(2000); // Wait for price to update
+          // Check for passenger selection buttons (Case B)
+          const paxButtonSelector = "a.btn.btn-primary[href*='pax=4']";
+          const hasPaxButton = await page.$(paxButtonSelector);
+          
+          if (hasPaxButton) {
+            console.log("Found passenger selection buttons. Clicking '4 passengers'...");
+            await page.click(paxButtonSelector);
+            await page.waitForTimeout(3000); // Wait for redirect to confirm page
+          } else {
+            // Fallback: check for dropdown if it's a different layout
+            const paxSelector = 'select[name="trip[legs][0][pax_count]"]';
+            const hasPaxSelector = await page.$(paxSelector);
+            if (hasPaxSelector) {
+              console.log("Found passenger dropdown. Setting to 4...");
+              await page.selectOption(paxSelector, '4');
+              await page.waitForTimeout(2000); // Wait for price to update
+            }
           }
           
           const bodyText = await page.innerText('body');
