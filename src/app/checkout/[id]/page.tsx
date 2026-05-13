@@ -152,9 +152,18 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
     flight.destination_airport.toLowerCase().includes("lcy")
   );
 
-  const totalPrice = flight.net_price + flight.broker_fee;
+  const basePrice = flight.net_price;
+  const brokerFee = flight.broker_fee;
+  const vatOnFlight = flight.vat_amount || 0;
+  
+  const totalPrice = basePrice + brokerFee;
   const insurancePrice = totalPrice * 0.10;
-  const finalPrice = totalPrice + (hasInsurance ? insurancePrice : 0);
+  
+  // Calculate VAT rate from flight if present, otherwise 0
+  const vatRate = basePrice > 0 ? (vatOnFlight / basePrice) : 0;
+  const vatOnInsurance = hasInsurance ? (insurancePrice * vatRate) : 0;
+  
+  const finalPrice = totalPrice + vatOnFlight + (hasInsurance ? (insurancePrice + vatOnInsurance) : 0);
   const depositAmount = Math.min(2000, finalPrice);
   const balanceAmount = finalPrice - depositAmount;
 
@@ -516,13 +525,31 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
                     <span>Base Flight Cost</span>
-                    <span>€{totalPrice.toLocaleString()}</span>
+                    <span>€{basePrice.toLocaleString()}</span>
                   </div>
-                  {hasInsurance && (
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                    <span>Broker Fee</span>
+                    <span>€{brokerFee.toLocaleString()}</span>
+                  </div>
+                  {vatOnFlight > 0 && (
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      <span>Cancellation Insurance</span>
-                      <span>€{insurancePrice.toLocaleString()}</span>
+                      <span>VAT</span>
+                      <span>€{vatOnFlight.toLocaleString()}</span>
                     </div>
+                  )}
+                  {hasInsurance && (
+                    <>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                        <span>Cancellation Insurance</span>
+                        <span>€{insurancePrice.toLocaleString()}</span>
+                      </div>
+                      {vatOnInsurance > 0 && (
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                          <span>VAT on Insurance</span>
+                          <span>€{vatOnInsurance.toLocaleString()}</span>
+                        </div>
+                      )}
+                    </>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
                     <span>Card Hold (Auth Only)</span>
@@ -644,13 +671,31 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                   <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
                       <span>Base Flight Cost</span>
-                      <span>€{totalPrice.toLocaleString()}</span>
+                      <span>€{basePrice.toLocaleString()}</span>
                     </div>
-                    {hasInsurance && (
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                      <span>Broker Fee</span>
+                      <span>€{brokerFee.toLocaleString()}</span>
+                    </div>
+                    {vatOnFlight > 0 && (
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                        <span>Cancellation Insurance</span>
-                        <span>€{insurancePrice.toLocaleString()}</span>
+                        <span>VAT</span>
+                        <span>€{vatOnFlight.toLocaleString()}</span>
                       </div>
+                    )}
+                    {hasInsurance && (
+                      <>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                          <span>Cancellation Insurance</span>
+                          <span>€{insurancePrice.toLocaleString()}</span>
+                        </div>
+                        {vatOnInsurance > 0 && (
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                            <span>VAT on Insurance</span>
+                            <span>€{vatOnInsurance.toLocaleString()}</span>
+                          </div>
+                        )}
+                      </>
                     )}
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
                       <span>Card Hold (Auth Only)</span>

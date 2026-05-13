@@ -156,12 +156,51 @@ async function scrapeGlobeAir() {
           console.log(`New flight found: ${flight.externalId}`);
         }
 
-        const price = flight.basePrice;
+        // Navigate to the flight page to check for VAT and ensure 4 passengers
+        let vatAmount = 0;
+        let price = flight.basePrice;
+        try {
+          console.log(`Navigating to flight page: ${flight.href}`);
+          await page.goto(flight.href, { waitUntil: 'networkidle' });
+          await page.waitForTimeout(2000); // Wait for content
+          
+          // Check for passenger selector and set to 4 if found
+          const paxSelector = 'select[name="trip[legs][0][pax_count]"]';
+          const hasPaxSelector = await page.$(paxSelector);
+          if (hasPaxSelector) {
+            console.log("Found passenger selector. Setting to 4...");
+            await page.selectOption(paxSelector, '4');
+            await page.waitForTimeout(2000); // Wait for price to update
+          }
+          
+          const bodyText = await page.innerText('body');
+          
+          // Try to extract the updated price for 4 passengers if it changed
+          const priceMatch = bodyText.match(/€\s*([\d,.]+)/);
+          if (priceMatch) {
+            const extractedPrice = parseFloat(priceMatch[1].replace(',', ''));
+            if (extractedPrice > price) {
+              console.log(`Price updated for 4 passengers: €${extractedPrice}`);
+              price = extractedPrice;
+            }
+          }
+
+          const vatMatch = bodyText.match(/€\s*([\d,.]+)\s*\(VAT\s*\d+%\s*included\)/i);
+          if (vatMatch) {
+            const vatInclusivePrice = parseFloat(vatMatch[1].replace(',', ''));
+            vatAmount = vatInclusivePrice - price;
+            console.log(`Found VAT! Inclusive Price: €${vatInclusivePrice} | VAT Amount: €${vatAmount}`);
+          } else {
+            console.log("No VAT detected on the flight page.");
+          }
+        } catch (navError) {
+          console.error(`Failed to navigate to flight page:`, navError);
+        }
         const brokerFee = price * 0.10;
         const finalBrokerFee = Math.ceil(brokerFee / 10) * 10;
         const finalTotal = price + finalBrokerFee;
 
-        console.log(`GlobeAir Price: €${price} | Broker Fee: €${finalBrokerFee} | Final Total: €${finalTotal}`);
+        console.log(`GlobeAir Price: €${price} | VAT: €${vatAmount} | Broker Fee: €${finalBrokerFee}`);
 
         if (!existing) {
           console.log('Inserting new flight...');
@@ -176,7 +215,8 @@ async function scrapeGlobeAir() {
             aircraft_category: 'Very Light Jet',
             seats: 4,
             net_price: price,
-            broker_fee: finalBrokerFee
+            broker_fee: finalBrokerFee,
+            vat_amount: vatAmount
           }]);
         } else {
           console.log('Updating existing flight...');
@@ -184,6 +224,7 @@ async function scrapeGlobeAir() {
             base_price: flight.basePrice,
             net_price: price,
             broker_fee: finalBrokerFee,
+            vat_amount: vatAmount,
             departure_date: flight.isoDate,
             departure_time: flight.departureTime,
             aircraft_model: 'Cessna Citation Mustang'
