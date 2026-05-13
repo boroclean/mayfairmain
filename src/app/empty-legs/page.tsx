@@ -10,15 +10,9 @@ function getCityAndCode(airportString: string) {
   const match = airportString.match(/\(([^)]+)\)/);
   const code = match ? match[1] : "";
 
-  let city = "";
-  if (airportString.startsWith("New York")) {
-    city = "New York";
-  } else if (airportString.startsWith("Los Angeles")) {
-    city = "Los Angeles";
-  } else {
-    const words = airportString.split(" ");
-    city = words[0];
-  }
+  // Extract city name (everything before the first parenthesis)
+  const cityMatch = airportString.match(/^(.*?)\s*\(/);
+  const city = cityMatch ? cityMatch[1] : airportString.split(' ')[0];
 
   return code ? `${city} (${code})` : city;
 }
@@ -34,15 +28,15 @@ function getFlag(airportString: string) {
     // UK
     "BQH": "🇬🇧", "LTN": "🇬🇧", "LCY": "🇬🇧", "FAB": "🇬🇧", "NHT": "🇬🇧", "STN": "🇬🇧", "SEN": "🇬🇧",
     // France
-    "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷", "CEQ": "🇫🇷",
+    "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷", "CEQ": "🇫🇷", "BOD": "🇫🇷", "CTT": "🇫🇷", "BOD": "🇫🇷",
     // Germany
     "NUE": "🇩🇪", "OBF": "🇩🇪", "CGN": "🇩🇪", "DUS": "🇩🇪", "DTM": "🇩🇪", "LEJ": "🇩🇪", "BRE": "🇩🇪", "MUC": "🇩🇪", "ERF": "🇩🇪", "FDH": "🇩🇪", "HAM": "🇩🇪", "TXL": "🇩🇪", "BER": "🇩🇪", "FRA": "🇩🇪", "FMO": "🇩🇪", "STR": "🇩🇪", "HAJ": "🇩🇪",
     // Switzerland
     "GVA": "🇨🇭", "ZRH": "🇨🇭", "BRN": "🇨🇭", "BSL": "🇨🇭", "SIR": "🇨🇭", "LUG": "🇨🇭",
     // Italy
-    "BLQ": "🇮🇹", "OLB": "🇮🇹", "VRN": "🇮🇹", "MXP": "🇮🇹", "LIN": "🇮🇹", "VCE": "🇮🇹", "NAP": "🇮🇹", "CIA": "🇮🇹", "FCO": "🇮🇹", "FLR": "🇮🇹",
+    "BLQ": "🇮🇹", "OLB": "🇮🇹", "VRN": "🇮🇹", "MXP": "🇮🇹", "LIN": "🇮🇹", "VCE": "🇮🇹", "NAP": "🇮🇹", "CIA": "🇮🇹", "FCO": "🇮🇹", "FLR": "🇮🇹", "PSA": "🇮🇹",
     // Spain
-    "IBZ": "🇪🇸", "PMI": "🇪🇸", "BCN": "🇪🇸", "MAD": "🇪🇸", "AGP": "🇪🇸", "VLC": "🇪🇸",
+    "IBZ": "🇪🇸", "PMI": "🇪🇸", "BCN": "🇪🇸", "MAD": "🇪🇸", "AGP": "🇪🇸", "VLC": "🇪🇸", "ALC": "🇪🇸",
     // Austria
     "VIE": "🇦🇹", "LNZ": "🇦🇹", "SZG": "🇦🇹", "INN": "🇦🇹", "GRZ": "🇦🇹",
     // Others
@@ -125,7 +119,41 @@ export default function EmptyLegs() {
             }
           }
 
-          combinedFlights = [...validFlights];
+          // Deduplicate flights based on route and time (within 5 minutes)
+          const uniqueFlights = [];
+          
+          for (const flight of validFlights) {
+            const depCode = flight.departure_airport?.match(/\(([^)]+)\)/)?.[1] || flight.departure_airport;
+            const destCode = flight.destination_airport?.match(/\(([^)]+)\)/)?.[1] || flight.destination_airport;
+            
+            const isDuplicate = uniqueFlights.some(existing => {
+              const exDepCode = existing.departure_airport?.match(/\(([^)]+)\)/)?.[1] || existing.departure_airport;
+              const exDestCode = existing.destination_airport?.match(/\(([^)]+)\)/)?.[1] || existing.destination_airport;
+              
+              if (depCode !== exDepCode || destCode !== exDestCode) return false;
+              if (flight.departure_date !== existing.departure_date) return false;
+              
+              // Parse times
+              const timeA = (flight.departure_time && flight.departure_time !== 'TBD') ? flight.departure_time.split(' ')[0] : '00:00';
+              const timeB = (existing.departure_time && existing.departure_time !== 'TBD') ? existing.departure_time.split(' ')[0] : '00:00';
+              
+              const dateA = new Date(`${flight.departure_date} ${timeA}`);
+              const dateB = new Date(`${existing.departure_date} ${timeB}`);
+              
+              const diffMs = Math.abs(dateA.getTime() - dateB.getTime());
+              const diffMins = diffMs / (1000 * 60);
+              
+              return diffMins <= 5;
+            });
+            
+            if (!isDuplicate) {
+              uniqueFlights.push(flight);
+            } else {
+              console.log(`Duplicate flight found and removed: ${flight.departure_airport} -> ${flight.destination_airport} at ${flight.departure_time}`);
+            }
+          }
+
+          combinedFlights = uniqueFlights;
 
           if (expiredFlightIds.length > 0) {
             supabase
@@ -142,8 +170,8 @@ export default function EmptyLegs() {
 
         // Sort combined flights by date
         combinedFlights.sort((a, b) => {
-          const timeA = a.departure_time !== 'TBD' ? a.departure_time.split(' ')[0] : '00:00';
-          const timeB = b.departure_time !== 'TBD' ? b.departure_time.split(' ')[0] : '00:00';
+          const timeA = (a.departure_time && a.departure_time !== 'TBD') ? a.departure_time.split(' ')[0] : '00:00';
+          const timeB = (b.departure_time && b.departure_time !== 'TBD') ? b.departure_time.split(' ')[0] : '00:00';
           const dateA = new Date(`${a.departure_date} ${timeA}`);
           const dateB = new Date(`${b.departure_date} ${timeB}`);
           return dateA.getTime() - dateB.getTime(); // Ascending order (soonest first)
@@ -160,9 +188,9 @@ export default function EmptyLegs() {
   }, []);
 
   const filteredFlights = flights.filter(flight =>
-    flight.departure_airport.toLowerCase().includes(search.toLowerCase()) ||
-    flight.destination_airport.toLowerCase().includes(search.toLowerCase()) ||
-    flight.aircraft_model.toLowerCase().includes(search.toLowerCase())
+    (flight.departure_airport?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (flight.destination_airport?.toLowerCase() || "").includes(search.toLowerCase()) ||
+    (flight.aircraft_model?.toLowerCase() || "").includes(search.toLowerCase())
   );
 
   return (

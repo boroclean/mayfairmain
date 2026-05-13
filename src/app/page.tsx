@@ -143,6 +143,70 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Operators Section */}
+      <section style={{ padding: "6rem 2rem", background: "var(--bg-primary)", borderTop: "1px solid rgba(212, 175, 55, 0.1)" }}>
+        <div className="container" style={{ textAlign: "center", marginBottom: "4rem" }}>
+          <h2 style={{ fontSize: "2.5rem", color: "var(--accent-gold)", fontFamily: "var(--font-heading)" }}>Operators in Our Network</h2>
+          <p style={{ color: "var(--text-secondary)", marginTop: "1rem", maxWidth: "700px", margin: "1rem auto 0" }}>
+            We source aircraft from fully certified operators worldwide. Mayfair & Main is an independent broker and does not own or operate aircraft.
+          </p>
+        </div>
+
+        <div className="container" style={{ 
+          display: "grid", 
+          gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", 
+          gap: "2rem" 
+        }}>
+          {/* Card 1: GlobeAir */}
+          <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.6)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+            <h3 style={{ color: "var(--accent-gold)", marginBottom: "0.5rem", fontSize: "1.3rem", fontFamily: "var(--font-heading)" }}>GlobeAir</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              Leading European VLJ operator with a uniform fleet of Cessna Citation Mustangs, offering premium empty leg flights.
+            </p>
+          </div>
+
+          {/* Card 2: NetJets */}
+          <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.6)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+            <h3 style={{ color: "var(--accent-gold)", marginBottom: "0.5rem", fontSize: "1.3rem", fontFamily: "var(--font-heading)" }}>NetJets</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              The world's largest private jet fleet operator, providing access to a vast network of aircraft across all categories.
+            </p>
+          </div>
+
+          {/* Card 3: VistaJet */}
+          <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.6)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+            <h3 style={{ color: "var(--accent-gold)", marginBottom: "0.5rem", fontSize: "1.3rem", fontFamily: "var(--font-heading)" }}>VistaJet</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              Global business aviation company known for its distinctive silver and red fleet and premium subscription services.
+            </p>
+          </div>
+
+          {/* Card 4: Wheels Up */}
+          <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.6)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+            <h3 style={{ color: "var(--accent-gold)", marginBottom: "0.5rem", fontSize: "1.3rem", fontFamily: "var(--font-heading)" }}>Wheels Up</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              A leading provider of on-demand private aviation in the US, offering a diverse fleet and membership options.
+            </p>
+          </div>
+
+          {/* Card 5: Luxaviation */}
+          <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.6)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+            <h3 style={{ color: "var(--accent-gold)", marginBottom: "0.5rem", fontSize: "1.3rem", fontFamily: "var(--font-heading)" }}>Luxaviation</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              One of the largest business aircraft operators globally, offering extensive management and charter services.
+            </p>
+          </div>
+
+          {/* Card 6: Air Charter Service */}
+          <div style={{ padding: "2rem", background: "rgba(10, 17, 13, 0.6)", border: "1px solid rgba(212, 175, 55, 0.2)", borderRadius: "8px" }}>
+            <h3 style={{ color: "var(--accent-gold)", marginBottom: "0.5rem", fontSize: "1.3rem", fontFamily: "var(--font-heading)" }}>Air Charter Service</h3>
+            <p style={{ color: "var(--text-secondary)", fontSize: "0.95rem", lineHeight: 1.6 }}>
+              Global aircraft charter broker with decades of experience in sourcing cargo, group, and private jet charters.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer style={{ borderTop: "1px solid rgba(212, 175, 55, 0.2)", padding: "4rem 2rem", textAlign: "center", marginTop: "auto" }}>
         <h2 style={{ fontFamily: "var(--font-heading)", color: "var(--accent-gold)", fontSize: "1.5rem", marginBottom: "1rem" }}>MAYFAIR <span style={{ fontFamily: "var(--font-body)", fontWeight: 300, fontSize: "1.2rem" }}>&</span> MAIN</h2>

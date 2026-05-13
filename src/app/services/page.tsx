@@ -6,27 +6,33 @@ export default function Services() {
   const services = [
     {
       title: "On-Demand Charter",
-      description: "Access to a vetted global network of Light, Midsize, and Heavy jets. We match the perfect aircraft to your exact mission requirements, ensuring absolute privacy and safety.",
+      description: "Access to a vetted global network of 5000+ jets. We match the perfect aircraft to your exact mission requirements, ensuring absolute privacy and safety.",
+      icon: "🛩️",
     },
     {
       title: "VIP Concierge",
       description: "From tarmac chauffeur transfers in a Rolls-Royce to Michelin-starred in-flight catering and exclusive hotel reservations, we manage every detail of your journey.",
+      icon: "🛎️",
     },
     {
       title: "Empty Leg Flights",
       description: "Take advantage of heavily discounted repositioning flights. Experience uncompromising luxury at exceptional value for flexible travel itineraries.",
+      icon: "🏷️",
     },
     {
       title: "Helicopter Transfers",
       description: "Bypass traffic and delays. We arrange seamless helicopter transfers from your private jet terminal directly to city centers, ski resorts, or your yacht.",
+      icon: "🚁",
     },
     {
       title: "Medical Evacuation",
       description: "Rapid-response, highly specialized air ambulance services for urgent medical transport, ensuring the highest level of care and discretion.",
+      icon: "🚑",
     },
     {
       title: "High-Value Cargo",
       description: "Secure, discrete, and expedited transport for fine art, jewelry, sensitive corporate documents, and other irreplaceable assets.",
+      icon: "💎",
     }
   ];
 
@@ -63,13 +69,20 @@ export default function Services() {
           marginTop: "2rem"
         }}>
           {services.map((service, index) => (
-            <div key={index} className="service-card">
-              <h3 style={{ color: "var(--accent-gold)", fontSize: "1.8rem", marginBottom: "1rem", fontFamily: "var(--font-heading)" }}>
-                {service.title}
-              </h3>
-              <p style={{ color: "var(--text-secondary)", lineHeight: 1.7 }}>
-                {service.description}
-              </p>
+            <div key={index} style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+              <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", display: "flex", alignItems: "center", gap: "1.5rem" }}>
+                <div style={{ fontSize: "3rem", background: "rgba(212, 175, 55, 0.1)", width: "64px", height: "64px", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "50%" }}>
+                  {service.icon}
+                </div>
+                <h3 style={{ color: "var(--accent-gold)", fontSize: "1.5rem", fontFamily: "var(--font-heading)", margin: 0 }}>
+                  {service.title}
+                </h3>
+              </div>
+              <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.02)", flex: 1 }}>
+                <p style={{ color: "var(--text-secondary)", lineHeight: 1.7, margin: 0 }}>
+                  {service.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>
