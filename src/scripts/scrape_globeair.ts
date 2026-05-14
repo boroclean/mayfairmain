@@ -78,11 +78,6 @@ async function scrapeGlobeAir() {
         if (parts.length === 2) {
           depAirport = parts[0].trim();
           destAirport = parts[1].trim();
-          
-          // Map Lugano to Milan as requested by user
-          if (destAirport.includes('Lugano (LUG)')) {
-            destAirport = 'Milan (MXP)';
-          }
         }
         
         const flightDataEl = link.nextElementSibling;
