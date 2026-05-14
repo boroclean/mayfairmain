@@ -2,7 +2,7 @@ name: Scrape GlobeAir
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
+    - cron: '*/30 * * * *' # Runs every 30 minutes
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }} # Needed to push changes back
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -47,6 +49,15 @@ jobs:
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       run: npx tsx src/scripts/scrape_globeair.ts
+
+    - name: Commit and Push Activity Log
+      if: always() # Run even if scrape fails
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git add SCRAPER_ACTIVITY.md
+        git commit -m "Update scraper activity log [skip ci]" || echo "No changes to commit"
+        git push origin main || echo "Failed to push"
 
     - name: Disconnect VPN
       if: always()
