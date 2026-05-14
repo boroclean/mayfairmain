@@ -1,5 +1,19 @@
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
+import * as fs from 'fs';
+
+const ACTIVITY_LOG_PATH = 'SCRAPER_ACTIVITY.md';
+
+function logActivity(action: string, details: string) {
+  const timestamp = new Date().toISOString();
+  const logLine = `| ${timestamp} | ${action} | ${details} |\n`;
+  
+  if (!fs.existsSync(ACTIVITY_LOG_PATH)) {
+    fs.writeFileSync(ACTIVITY_LOG_PATH, '# Scraper Activity Log\n\n| Timestamp | Action | Details |\n| --- | --- | --- |\n');
+  }
+  
+  fs.appendFileSync(ACTIVITY_LOG_PATH, logLine);
+}
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -147,8 +161,8 @@ async function scrapeGlobeAir() {
 
         if (existing) {
           if (existing.base_price === flight.basePrice && existing.departure_time === flight.departureTime) {
-            console.log(`Skipping ${flight.externalId} - Price and time perfectly match.`);
-            continue; 
+            console.log(`Checking ${flight.externalId} anyway to ensure VAT and price are correct...`);
+            // continue; // Do NOT skip, we need to check the flight page for VAT!
           } else {
             console.log(`Price/Time changed for ${flight.externalId}! Updating...`);
           }
@@ -162,46 +176,85 @@ async function scrapeGlobeAir() {
         try {
           console.log(`Navigating to flight page: ${flight.href}`);
           await page.goto(flight.href, { waitUntil: 'domcontentloaded', timeout: 60000 });
-          await page.waitForTimeout(2000); // Wait for content
+          await page.waitForTimeout(5000); // Wait longer for VAT and price updates!
           
-          // Check for passenger selection buttons (Case B)
-          const paxButtonSelector = "a.btn.btn-primary[href*='pax=4']";
-          const hasPaxButton = await page.$(paxButtonSelector);
-          
-          if (hasPaxButton) {
-            console.log("Found passenger selection buttons. Clicking '4 passengers'...");
-            await page.click(paxButtonSelector);
-            await page.waitForTimeout(3000); // Wait for redirect to confirm page
+          // Handle the "For how many passengers?" page if it appears
+          const isPaxPage = await page.$('text="For how many passengers?"');
+          if (isPaxPage) {
+            console.log("On passenger selection page. Clicking '4 passengers'...");
+            await page.click('text="4 passengers"');
+            await page.waitForTimeout(5000); // Wait for confirmation page to load
           } else {
-            // Fallback: check for dropdown if it's a different layout
-            const paxSelector = 'select[name="trip[legs][0][pax_count]"]';
-            const hasPaxSelector = await page.$(paxSelector);
-            if (hasPaxSelector) {
-              console.log("Found passenger dropdown. Setting to 4...");
-              await page.selectOption(paxSelector, '4');
-              await page.waitForTimeout(2000); // Wait for price to update
+            // Check for passenger selection buttons (Case B)
+            const paxButtonSelector = "a.btn.btn-primary[href*='pax=4']";
+            const hasPaxButton = await page.$(paxButtonSelector);
+            
+            if (hasPaxButton) {
+              console.log("Found passenger selection buttons. Clicking '4 passengers'...");
+              await page.click(paxButtonSelector);
+              await page.waitForTimeout(3000); // Wait for redirect to confirm page
+            } else {
+              // Fallback: check for dropdown if it's a different layout
+              const paxSelector = 'select[name="trip[legs][0][pax_count]"]';
+              const hasPaxSelector = await page.$(paxSelector);
+              if (hasPaxSelector) {
+                console.log("Found passenger dropdown. Setting to 4...");
+                await page.selectOption(paxSelector, '4');
+                await page.waitForTimeout(2000); // Wait for price to update
+              }
             }
           }
           
           const bodyText = await page.innerText('body');
           
-          // Try to extract the updated price for 4 passengers if it changed
-          const priceMatch = bodyText.match(/€\s*([\d,.]+)/);
-          if (priceMatch) {
-            const extractedPrice = parseFloat(priceMatch[1].replace(',', ''));
-            if (extractedPrice > price) {
-              console.log(`Price updated for 4 passengers: €${extractedPrice}`);
-              price = extractedPrice;
+          // Debug screenshot to see what the scraper sees
+          await page.screenshot({ path: `debug_flight_${flight.externalId}.png` });
+          console.log(`Saved debug screenshot for ${flight.externalId}`);
+          
+          // Extract time from flight page if available (e.g. "at 13:00")
+          const timeMatch = bodyText.match(/at\s*(\d{2}:\d{2})/i);
+          if (timeMatch) {
+            const depTime = timeMatch[1];
+            console.log(`Extracted time from flight page: ${depTime}`);
+            // Update the departure time with the one from the booking page!
+            // We keep the arrival time if we had it, or just use the new departure time
+            if (flight.departureTime.includes('-')) {
+              const parts = flight.departureTime.split('-');
+              flight.departureTime = `${depTime} - ${parts[1].trim()}`;
+            } else {
+              flight.departureTime = depTime;
             }
           }
-
-          const vatMatch = bodyText.match(/€\s*([\d,.]+)\s*\(VAT\s*\d+%\s*included\)/i);
-          if (vatMatch) {
-            const vatInclusivePrice = parseFloat(vatMatch[1].replace(',', ''));
-            vatAmount = vatInclusivePrice - price;
-            console.log(`Found VAT! Inclusive Price: €${vatInclusivePrice} | VAT Amount: €${vatAmount}`);
+          
+          // Find all prices on the page
+          const prices = bodyText.match(/€\s*([\d,.]+)/g);
+          
+          // Find the highest price on the flight page (which is for 4 passengers)
+          let highestPrice = price; // Default to list price
+          if (prices) {
+            for (const p of prices) {
+              const val = parseFloat(p.replace('€', '').trim().replace(',', ''));
+              if (val > highestPrice) {
+                highestPrice = val;
+              }
+            }
+          }
+          
+          // Check for VAT
+          const hasVat = bodyText.match(/(VAT|TVA)\s*\d+%/i) || 
+                         bodyText.match(/\d+%\s*(VAT|TVA)/i) ||
+                         bodyText.match(/\(VAT.*?included\)/i) ||
+                         bodyText.match(/VAT.*?€/i);
+                         
+          if (hasVat) {
+            console.log(`VAT detected on flight page! Highest Price: €${highestPrice}`);
+            // Calculate price without VAT (assuming 10% as per user request)
+            const priceWithoutVat = Math.round(highestPrice / 1.1);
+            vatAmount = Math.round(highestPrice - priceWithoutVat);
+            price = priceWithoutVat; // Use price without VAT
+            console.log(`Calculated: Price without VAT: €${price} | VAT: €${vatAmount}`);
           } else {
-            console.log("No VAT detected on the flight page.");
+            price = highestPrice; // No VAT, use highest price
           }
         } catch (navError) {
           console.error(`Failed to navigate to flight page:`, navError);
@@ -212,34 +265,41 @@ async function scrapeGlobeAir() {
 
         console.log(`GlobeAir Price: €${price} | VAT: €${vatAmount} | Broker Fee: €${finalBrokerFee}`);
 
-        if (!existing) {
-          console.log('Inserting new flight...');
-          await supabase.from('empty_legs').insert([{
-            external_id: flight.externalId,
-            base_price: flight.basePrice,
-            departure_airport: flight.depAirport,
-            destination_airport: flight.destAirport,
-            departure_date: flight.isoDate,
-            departure_time: flight.departureTime,
-            aircraft_model: 'Cessna Citation Mustang',
-            aircraft_category: 'Very Light Jet',
-            seats: 4,
-            net_price: price,
-            broker_fee: finalBrokerFee,
-            vat_amount: vatAmount
-          }]);
-        } else {
-          console.log('Updating existing flight...');
-          await supabase.from('empty_legs').update({
-            base_price: flight.basePrice,
-            net_price: price,
-            broker_fee: finalBrokerFee,
-            vat_amount: vatAmount,
-            departure_date: flight.isoDate,
-            departure_time: flight.departureTime,
-            aircraft_model: 'Cessna Citation Mustang'
-          }).eq('id', existing.id);
-        }
+          if (!existing) {
+            console.log('Inserting new flight...');
+            await supabase.from('empty_legs').insert([{
+              external_id: flight.externalId,
+              base_price: flight.basePrice,
+              departure_airport: flight.depAirport,
+              destination_airport: flight.destAirport,
+              departure_date: flight.isoDate,
+              departure_time: flight.departureTime,
+              aircraft_model: 'Cessna Citation Mustang',
+              aircraft_category: 'Very Light Jet',
+              seats: 4,
+              net_price: price,
+              broker_fee: finalBrokerFee,
+              vat_amount: vatAmount
+            }]);
+            logActivity('INSERT', `Flight ${flight.externalId} from ${flight.depAirport} to ${flight.destAirport} for €${finalTotal}`);
+          } else {
+             console.log('Updating existing flight...');
+             const { error: updateError } = await supabase.from('empty_legs').update({
+               base_price: flight.basePrice,
+               net_price: price,
+               broker_fee: finalBrokerFee,
+               vat_amount: vatAmount,
+               departure_date: flight.isoDate,
+               departure_time: flight.departureTime,
+               aircraft_model: 'Cessna Citation Mustang'
+             }).eq('id', existing.id);
+             
+             if (updateError) {
+               console.error(`Failed to update flight ${flight.externalId}:`, updateError);
+             } else {
+               logActivity('UPDATE', `Flight ${flight.externalId} updated price to €${finalTotal} and time to ${flight.departureTime}`);
+             }
+          }
       } catch (error) {
         console.error(`Error processing flight ${flight.externalId}:`, error);
       }
@@ -259,6 +319,7 @@ async function scrapeGlobeAir() {
           if (!currentExternalIds.includes(dbFlight.external_id)) {
             console.log(`Flight ${dbFlight.external_id} is no longer on GlobeAir. Removing from our database...`);
             await supabase.from('empty_legs').delete().eq('id', dbFlight.id);
+            logActivity('DELETE', `Flight ${dbFlight.external_id} removed because it is no longer on GlobeAir`);
           }
         }
       }

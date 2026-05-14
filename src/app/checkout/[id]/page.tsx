@@ -53,7 +53,7 @@ function PaymentForm({ flightId, depositAmount, setCurrentStep }: { flightId: st
         <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Secure Soft Hold Authorization</h2>
         <p style={{ fontSize: "0.9rem", color: "var(--text-secondary)", marginBottom: "1rem", lineHeight: 1.6 }}>
           Because empty legs are subject to final operator confirmation, we do not charge the full amount instantly.
-          Please provide your card details to place a secure <strong>€{depositAmount.toLocaleString()} hold</strong>. If the flight is unavailable, the hold is released instantly.
+          Please provide your card details to place a secure <strong>€{depositAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })} hold</strong>. If the flight is unavailable, the hold is released instantly.
         </p>
 
         {/* Stripe Payment Element */}
@@ -72,7 +72,7 @@ function PaymentForm({ flightId, depositAmount, setCurrentStep }: { flightId: st
           Back
         </button>
         <button type="submit" disabled={isSubmitting || !stripe || !elements} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: (isSubmitting || !stripe || !elements) ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", opacity: (isSubmitting || !stripe || !elements) ? 0.7 : 1 }}>
-          {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString()} Hold`}
+          {isSubmitting ? 'Processing...' : `Authorize €${depositAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })} Hold`}
         </button>
       </div>
     </form>
@@ -106,7 +106,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   const [petWeight, setPetWeight] = useState('');
   const [petPassport, setPetPassport] = useState('');
   const [agreedToPetPolicy, setAgreedToPetPolicy] = useState(false);
-  
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
@@ -130,7 +130,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
     fetchFlight();
   }, [legId]);
   const isGlobeAir = flight && (
-    flight.aircraft_model === "Cessna Citation Mustang" || 
+    flight.aircraft_model === "Cessna Citation Mustang" ||
     flight.aircraft_model?.includes("Cessna")
   );
 
@@ -152,18 +152,25 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
     flight.destination_airport.toLowerCase().includes("lcy")
   );
 
-  const basePrice = flight.net_price;
-  const brokerFee = flight.broker_fee;
   const vatOnFlight = flight.vat_amount || 0;
+  const priceWithoutVat = flight.net_price; // Now stored without VAT in database!
+  const brokerFee = flight.broker_fee || 0;
   
-  const totalPrice = basePrice + brokerFee;
-  const insurancePrice = totalPrice * 0.10;
+  // 1. Base Cost (GlobeAir price without VAT + Commission)
+  const baseCost = priceWithoutVat + brokerFee;
   
-  // Calculate VAT rate from flight if present, otherwise 0
-  const vatRate = basePrice > 0 ? (vatOnFlight / basePrice) : 0;
-  const vatOnInsurance = hasInsurance ? (insurancePrice * vatRate) : 0;
+  // 2. Cancellation Insurance (10% of Base Cost)
+  const insurancePrice = baseCost * 0.10;
   
-  const finalPrice = totalPrice + vatOnFlight + (hasInsurance ? (insurancePrice + vatOnInsurance) : 0);
+  // 3. VAT (X% of Base Cost + Insurance)
+  const vatRate = priceWithoutVat > 0 ? (vatOnFlight / priceWithoutVat) : 0;
+  const totalSubjectToVat = baseCost + (hasInsurance ? insurancePrice : 0);
+  const finalVat = totalSubjectToVat * vatRate;
+  
+  // 4. Final Price
+  const finalPrice = totalSubjectToVat + finalVat;
+  
+  // 5. Soft Hold and Balance
   const depositAmount = Math.min(2000, finalPrice);
   const balanceAmount = finalPrice - depositAmount;
 
@@ -243,8 +250,9 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-primary)" }}>
-      <style>{`
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "var(--bg-primary)" }}>
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes fadeInSlideUp {
           from {
             opacity: 0;
@@ -258,7 +266,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         .step-transition {
           animation: fadeInSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-      `}</style>
+      ` }} />
       {/* Minimal Checkout Nav */}
       <nav style={{ padding: "1.5rem 2rem", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", background: "var(--bg-secondary)" }}>
         <Link href="/" style={{ fontFamily: "var(--font-heading)", fontSize: "1.2rem", letterSpacing: "0.1em", color: "var(--accent-gold)" }}>
@@ -271,7 +279,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
       </nav>
 
       <section style={{ padding: "4rem 2rem", flex: 1, display: "flex", justifyContent: "center" }}>
-        
+
         {/* Step 1: Pets, Info, Insurance (GlobeAir Only) */}
         {currentStep === 1 && isGlobeAir && (
           <div className="step-transition" style={{ width: "100%", maxWidth: "800px" }}>
@@ -284,7 +292,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             {/* Pet Policy Section */}
             <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", marginBottom: "2rem" }}>
               <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "1rem", fontFamily: "var(--font-heading)" }}>Travel with Pets</h2>
-              
+
               <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                   <label style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-secondary)" }}>Are you traveling with a pet?</label>
@@ -336,7 +344,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             {/* Insurance Section */}
             <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "3rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", marginBottom: "3rem" }}>
               <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "1rem", fontFamily: "var(--font-heading)" }}>Cancellation Insurance</h2>
-              
+
               <div style={{ border: "1px solid rgba(212, 175, 55, 0.3)", borderRadius: "8px", overflow: "hidden" }}>
                 {/* Header */}
                 <div style={{ background: "rgba(212, 175, 55, 0.1)", padding: "1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -346,7 +354,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                     <span style={{ background: "#25D366", color: "white", fontSize: "0.7rem", padding: "2px 6px", borderRadius: "10px", textTransform: "uppercase" }}>Recommended</span>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ color: "var(--text-primary)", fontWeight: "bold" }}>+€{insurancePrice.toLocaleString()}</div>
+                    <div style={{ color: "var(--text-primary)", fontWeight: "bold" }}>+€{insurancePrice.toLocaleString(undefined, { maximumFractionDigits: 1 })}</div>
                     <div style={{ color: "var(--text-secondary)", fontSize: "0.8rem" }}>10% of Total</div>
                   </div>
                 </div>
@@ -399,10 +407,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         {/* Step 2: Billing Details */}
         {currentStep === 2 && (
           <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
-            
+
             {/* Left Column: Forms */}
             <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
-              
+
               <div style={{ textAlign: "center", marginBottom: "1rem" }}>
                 <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 2</span>
                 <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Billing <span style={{ fontFamily: "var(--font-body)" }}>&</span> Payment</h1>
@@ -411,7 +419,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               {/* Billing Details Section */}
               <div style={{ background: "rgba(10, 17, 13, 0.8)", padding: "1.5rem", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px" }}>
                 <h2 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)", paddingBottom: "0.5rem", fontFamily: "var(--font-heading)" }}>Billing Details</h2>
-                
+
                 <div style={{ display: "flex", gap: "1.5rem", marginBottom: "1rem" }}>
                   <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "var(--text-primary)", cursor: "pointer" }}>
                     <input type="radio" name="billingType" value="individual" checked={billingType === 'individual'} onChange={e => setBillingType(e.target.value)} style={{ accentColor: "var(--accent-gold)" }} />
@@ -501,7 +509,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
               <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden" }}>
                 <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
                   <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
-                  
+
                   <div style={{ marginBottom: "1.5rem" }}>
                     <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
                     <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.departure_airport)} {flight.departure_airport}</div>
@@ -524,105 +532,92 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
                 <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                    <span>Base Flight Cost</span>
-                    <span>€{basePrice.toLocaleString()}</span>
+                    <span>Base Cost</span>
+                    <span>€{baseCost.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                    <span>Broker Fee</span>
-                    <span>€{brokerFee.toLocaleString()}</span>
-                  </div>
-                  {vatOnFlight > 0 && (
+                  {hasInsurance && (
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      <span>VAT</span>
-                      <span>€{vatOnFlight.toLocaleString()}</span>
+                      <span>Cancellation Insurance</span>
+                      <span>€{insurancePrice.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                     </div>
                   )}
-                  {hasInsurance && (
-                    <>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                        <span>Cancellation Insurance</span>
-                        <span>€{insurancePrice.toLocaleString()}</span>
-                      </div>
-                      {vatOnInsurance > 0 && (
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                          <span>VAT on Insurance</span>
-                          <span>€{vatOnInsurance.toLocaleString()}</span>
-                        </div>
-                      )}
-                    </>
+                  {finalVat > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                      <span>VAT</span>
+                      <span>€{finalVat.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
+                    </div>
                   )}
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
-                    <span>Card Hold (Auth Only)</span>
-                    <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString()}</span>
+                    <span>Soft Hold (Card)</span>
+                    <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "1rem" }}>
-                    <span>Balance (Wire on Confirmation)</span>
-                    <span>€{balanceAmount.toLocaleString()}</span>
+                    <span>Balance</span>
+                    <span>€{balanceAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                   </div>
                   <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "1.05rem" }}>
                     <span>Total Cost</span>
-                    <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
+                    <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                   </div>
                 </div>
               </div>
-
-              {/* Buttons moved here */}
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
-                {isGlobeAir && (
-                  <button onClick={() => setCurrentStep(1)} style={{ padding: "1rem 1.5rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    Back
-                  </button>
-                )}
-                <button onClick={async () => {
-                  if (!firstName || !lastName || !passengerEmail || !passengerPhone || !billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
-                    alert('Please fill in all billing details.');
-                    return;
-                  }
-                  setIsSubmitting(true);
-                  try {
-                    const res = await fetch('/api/stripe-checkout', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        flightId: legId,
-                        departure: flight.departure_airport,
-                        destination: flight.destination_airport,
-                        date: flight.departure_date,
-                        time: flight.departure_time,
-                        aircraft: flight.aircraft_model,
-                        price: finalPrice,
-                        hasInsurance,
-                        firstName,
-                        lastName,
-                        passengerEmail,
-                        passengerPhone,
-                        billingType,
-                        companyName,
-                        taxNumber,
-                        billingCountry,
-                        billingCity,
-                        billingPostalCode,
-                        billingStreetAddress,
-                      }),
-                    });
-                    const data = await res.json();
-                    if (data.clientSecret) {
-                      setClientSecret(data.clientSecret);
-                      setCurrentStep(3);
-                    } else {
-                      alert('Failed to initialize payment.');
-                    }
-                  } catch (err) {
-                    console.error(err);
-                    alert('An error occurred.');
-                  }
-                  setIsSubmitting(false);
-                }} disabled={isSubmitting} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: isSubmitting ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto", opacity: isSubmitting ? 0.7 : 1 }}>
-                  {isSubmitting ? 'Loading...' : 'Proceed to Payment'}
-                </button>
-              </div>
             </div>
 
+            {/* Buttons moved here */}
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1rem" }}>
+              {isGlobeAir && (
+                <button onClick={() => setCurrentStep(1)} style={{ padding: "1rem 1.5rem", background: "transparent", color: "var(--text-primary)", border: "1px solid rgba(255,255,255,0.2)", cursor: "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  Back
+                </button>
+              )}
+              <button onClick={async () => {
+                if (!firstName || !lastName || !passengerEmail || !passengerPhone || !billingCountry || !billingCity || !billingPostalCode || !billingStreetAddress) {
+                  alert('Please fill in all billing details.');
+                  return;
+                }
+                setIsSubmitting(true);
+                try {
+                  const res = await fetch('/api/stripe-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      flightId: legId,
+                      departure: flight.departure_airport,
+                      destination: flight.destination_airport,
+                      date: flight.departure_date,
+                      time: flight.departure_time,
+                      aircraft: flight.aircraft_model,
+                      price: finalPrice,
+                      hasInsurance,
+                      firstName,
+                      lastName,
+                      passengerEmail,
+                      passengerPhone,
+                      billingType,
+                      companyName,
+                      taxNumber,
+                      billingCountry,
+                      billingCity,
+                      billingPostalCode,
+                      billingStreetAddress,
+                    }),
+                  });
+                  const data = await res.json();
+                  if (data.clientSecret) {
+                    setClientSecret(data.clientSecret);
+                    setCurrentStep(3);
+                  } else {
+                    alert('Failed to initialize payment.');
+                  }
+                } catch (err) {
+                  console.error(err);
+                  alert('An error occurred.');
+                }
+                setIsSubmitting(false);
+              }} disabled={isSubmitting} style={{ padding: "1rem 2rem", background: "var(--accent-gold)", color: "var(--bg-primary)", border: "none", cursor: isSubmitting ? "not-allowed" : "pointer", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "auto", opacity: isSubmitting ? 0.7 : 1 }}>
+                {isSubmitting ? 'Loading...' : 'Proceed to Payment'}
+              </button>
+            </div>
           </div>
         )}
 
@@ -630,10 +625,10 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         {currentStep === 3 && clientSecret && (
           <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: 'night' } }}>
             <div className="mobile-stack-reverse step-transition" style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 400px", gap: "4rem" }}>
-              
+
               {/* Left Column: Payment Form */}
               <div style={{ display: "flex", flexDirection: "column", gap: "3rem" }}>
-                
+
                 <div style={{ textAlign: "center", marginBottom: "1rem" }}>
                   <span style={{ color: "var(--accent-gold)", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.2em" }}>Step 3</span>
                   <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginTop: "0.5rem" }}>Payment</h1>
@@ -647,7 +642,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
                 <div style={{ background: "rgba(10, 17, 13, 0.8)", border: "1px solid rgba(212, 175, 55, 0.4)", borderRadius: "8px", overflow: "hidden" }}>
                   <div style={{ padding: "2rem", borderBottom: "1px solid rgba(212, 175, 55, 0.2)" }}>
                     <h3 style={{ fontSize: "1.2rem", color: "var(--accent-gold)", marginBottom: "1.5rem", fontFamily: "var(--font-heading)" }}>Flight Summary</h3>
-                    
+
                     <div style={{ marginBottom: "1.5rem" }}>
                       <div style={{ fontSize: "0.8rem", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>Routing</div>
                       <div style={{ fontWeight: 600, fontSize: "1.1rem" }}>{getCountryFlag(flight.departure_airport)} {flight.departure_airport}</div>
@@ -670,44 +665,32 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
 
                   <div style={{ padding: "2rem", background: "rgba(212, 175, 55, 0.05)" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      <span>Base Flight Cost</span>
-                      <span>€{basePrice.toLocaleString()}</span>
+                      <span>Flight Cost</span>
+                      <span>€{totalPrice.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                      <span>Broker Fee</span>
-                      <span>€{brokerFee.toLocaleString()}</span>
-                    </div>
-                    {vatOnFlight > 0 && (
+                    {hasInsurance && (
                       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                        <span>VAT</span>
-                        <span>€{vatOnFlight.toLocaleString()}</span>
+                        <span>Cancellation Insurance</span>
+                        <span>€{insurancePrice.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                       </div>
                     )}
-                    {hasInsurance && (
-                      <>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                          <span>Cancellation Insurance</span>
-                          <span>€{insurancePrice.toLocaleString()}</span>
-                        </div>
-                        {vatOnInsurance > 0 && (
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
-                            <span>VAT on Insurance</span>
-                            <span>€{vatOnInsurance.toLocaleString()}</span>
-                          </div>
-                        )}
-                      </>
+                    {(vatOnFlight > 0 || vatOnInsurance > 0) && (
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "1rem", color: "var(--text-secondary)" }}>
+                        <span>VAT</span>
+                        <span>€{(vatOnFlight + vatOnInsurance).toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
+                      </div>
                     )}
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", color: "var(--text-secondary)", fontSize: "0.9rem" }}>
                       <span>Card Hold (Auth Only)</span>
-                      <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString()}</span>
+                      <span style={{ color: "var(--accent-gold)" }}>€{depositAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-secondary)", fontSize: "0.9rem", marginBottom: "1rem" }}>
                       <span>Balance (Wire on Confirmation)</span>
-                      <span>€{balanceAmount.toLocaleString()}</span>
+                      <span>€{balanceAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                     </div>
                     <div style={{ display: "flex", justifyContent: "space-between", color: "var(--text-primary)", fontWeight: "bold", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "1rem", fontSize: "1.05rem" }}>
                       <span>Total Cost</span>
-                      <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString()}</span>
+                      <span style={{ color: "var(--accent-gold)" }}>€{finalPrice.toLocaleString(undefined, { maximumFractionDigits: 1 })}</span>
                     </div>
                   </div>
                 </div>
@@ -723,7 +706,7 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
             <div style={{ fontSize: "4rem", color: "var(--accent-gold)", marginBottom: "2rem" }}>✓</div>
             <h1 style={{ fontFamily: "var(--font-heading)", fontSize: "2.5rem", color: "var(--text-primary)", marginBottom: "1rem" }}>Soft Hold Confirmed</h1>
             <p style={{ color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "2rem" }}>
-              Thank you for choosing Mayfair & Main. We have placed a secure hold of €{depositAmount.toLocaleString()} on your card.
+              Thank you for choosing Mayfair & Main. We have placed a secure hold of €{depositAmount.toLocaleString(undefined, { maximumFractionDigits: 1 })} on your card.
             </p>
             <p style={{ color: "var(--text-secondary)", lineHeight: "1.6", marginBottom: "3rem" }}>
               Our team is now confirming the flight with the operator. You will receive an email confirmation and invoice shortly.
@@ -735,6 +718,6 @@ export default function CheckoutPage({ params }: { params: { id: string } }) {
         )}
 
       </section>
-    </main>
+    </div>
   );
 }
