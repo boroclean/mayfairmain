@@ -153,11 +153,13 @@ async function scrapeGlobeAir() {
 
     for (const flight of flightsToProcess) {
       try {
-        const { data: existing, error: dbError } = await supabase
+        const { data: existingRows, error: dbError } = await supabase
           .from('empty_legs')
           .select('id, base_price, departure_time')
           .eq('external_id', flight.externalId)
-          .maybeSingle();
+          .limit(1);
+
+        const existing = existingRows && existingRows.length > 0 ? existingRows[0] : null;
 
         if (existing) {
           if (existing.base_price === flight.basePrice && existing.departure_time === flight.departureTime) {
