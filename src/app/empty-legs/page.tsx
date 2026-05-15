@@ -28,13 +28,13 @@ function getFlag(airportString: string) {
     // UK
     "BQH": "🇬🇧", "LTN": "🇬🇧", "LCY": "🇬🇧", "FAB": "🇬🇧", "NHT": "🇬🇧", "STN": "🇬🇧", "SEN": "🇬🇧",
     // France
-    "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷", "CEQ": "🇫🇷", "BOD": "🇫🇷", "CTT": "🇫🇷", "BOD": "🇫🇷",
+    "LBG": "🇫🇷", "NCE": "🇫🇷", "TLS": "🇫🇷", "SDH": "🇫🇷", "ANG": "🇫🇷", "MRS": "🇫🇷", "LYS": "🇫🇷", "CGF": "🇫🇷", "LRH": "🇫🇷", "CEQ": "🇫🇷", "BOD": "🇫🇷", "CTT": "🇫🇷", "LTT": "🇫🇷",
     // Germany
     "NUE": "🇩🇪", "OBF": "🇩🇪", "CGN": "🇩🇪", "DUS": "🇩🇪", "DTM": "🇩🇪", "LEJ": "🇩🇪", "BRE": "🇩🇪", "MUC": "🇩🇪", "ERF": "🇩🇪", "FDH": "🇩🇪", "HAM": "🇩🇪", "TXL": "🇩🇪", "BER": "🇩🇪", "FRA": "🇩🇪", "FMO": "🇩🇪", "STR": "🇩🇪", "HAJ": "🇩🇪",
     // Switzerland
     "GVA": "🇨🇭", "ZRH": "🇨🇭", "BRN": "🇨🇭", "BSL": "🇨🇭", "SIR": "🇨🇭", "LUG": "🇨🇭",
     // Italy
-    "BLQ": "🇮🇹", "OLB": "🇮🇹", "VRN": "🇮🇹", "MXP": "🇮🇹", "LIN": "🇮🇹", "VCE": "🇮🇹", "NAP": "🇮🇹", "CIA": "🇮🇹", "FCO": "🇮🇹", "FLR": "🇮🇹", "PSA": "🇮🇹",
+    "BLQ": "🇮🇹", "OLB": "🇮🇹", "VRN": "🇮🇹", "MXP": "🇮🇹", "LIN": "🇮🇹", "VCE": "🇮🇹", "NAP": "🇮🇹", "CIA": "🇮🇹", "FCO": "🇮🇹", "FLR": "🇮🇹", "PSA": "🇮🇹", "CAG": "🇮🇹",
     // Spain
     "IBZ": "🇪🇸", "PMI": "🇪🇸", "BCN": "🇪🇸", "MAD": "🇪🇸", "AGP": "🇪🇸", "VLC": "🇪🇸", "ALC": "🇪🇸",
     // Austria
