@@ -300,7 +300,7 @@ export default function EmptyLegs() {
                 {/* Row 4: Price & Action */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <div style={{ color: "var(--accent-gold)", fontWeight: 700, fontSize: "1.3rem", display: "flex", flexDirection: "column" }}>
-                    <span>€{flight.net_price - (flight.vat_amount || 0) + flight.broker_fee}</span>
+                    <span>€{flight.net_price + flight.broker_fee}</span>
                     <span style={{ fontSize: "0.7rem", color: "var(--text-secondary)", fontWeight: 400 }}>Whole Aircraft</span>
                   </div>
                   <Link href={`/checkout/${flight.id}`} className="btn" style={{ padding: "8px 20px", fontSize: "0.8rem" }}>
@@ -359,7 +359,7 @@ export default function EmptyLegs() {
                         </div>
                       </td>
                       <td data-label="Price">
-                        <span className="price-discount">€{flight.net_price - (flight.vat_amount || 0) + flight.broker_fee}</span>
+                        <span className="price-discount">€{flight.net_price + flight.broker_fee}</span>
                       </td>
                       <td data-label="Status">
                         <span className="status-badge status-available">Available</span>
