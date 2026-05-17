@@ -27,22 +27,6 @@ jobs:
     - name: Install Playwright browsers
       run: npx playwright install --with-deps chromium
 
-    - name: Setup and Connect NordVPN
-      run: |
-        # Install NordVPN
-        wget -qO - https://repo.nordvpn.com/gpg/nordvpn_public.asc | sudo apt-key add -
-        echo "deb https://repo.nordvpn.com/deb/nordvpn/debian stable main" | sudo tee /etc/apt/sources.list.d/nordvpn.list
-        sudo apt-get update
-        sudo apt-get install -y nordvpn
-        
-        # Start NordVPN service
-        sudo service nordvpn start
-        sleep 5
-        
-        # Log in and connect
-        sudo nordvpn login --token "${{ secrets.NORDVPN_TOKEN }}"
-        sudo nordvpn connect France
-        
     - name: Run Scraper
       env:
         NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -58,7 +42,3 @@ jobs:
         git add SCRAPER_ACTIVITY.md
         git commit -m "Update scraper activity log [skip ci]" || echo "No changes to commit"
         git push origin main || echo "Failed to push"
-
-    - name: Disconnect VPN
-      if: always()
-      run: sudo nordvpn disconnect || true
